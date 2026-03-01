@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gippslander Jobs | Live Reporting</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-50 text-gray-800 font-sans pb-12">
+
+    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900">Gippslander Jobs Dashboard</h1>
+                <div class="text-sm text-slate-500 mt-2 flex items-center">
+                    <svg id="liveIndicator" class="w-3 h-3 text-emerald-500 animate-pulse mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                    </svg>
+                    Live reporting &nbsp;•&nbsp; Last updated: <span id="lastUpdated" class="font-medium ml-1 text-slate-700">Fetching...</span>
+                    &nbsp;•&nbsp; <span id="refreshStatusText" class="text-xs text-slate-400 ml-1">(Auto-refreshes every 60 mins)</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center bg-white border border-gray-300 rounded-md shadow-sm px-2">
+                    <span class="text-xs text-gray-500 pl-2 pr-1">Auto-refresh:</span>
+                    <select id="refreshSelector" onchange="changeRefreshRate()" class="text-sm font-medium py-2 pl-1 pr-6 focus:outline-none text-slate-700 bg-transparent cursor-pointer">
+                        <option value="off">Off</option>
+                        <option value="60000">1 min</option>
+                        <option value="300000">5 mins</option>
+                        <option value="900000">15 mins</option>
+                        <option value="3600000">60 mins</option>
+                    </select>
+                </div>
+                <button onclick="fetchData(true)" class="flex items-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md shadow transition-colors duration-200">
+                    <svg id="refreshIcon" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Refresh Now
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-6 border-t-4 border-t-blue-500">
+                <p class="text-sm font-medium text-slate-500">Total Active Jobs</p>
+                <p class="text-3xl font-bold text-slate-900 mt-1" id="kpi-total-jobs">-</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-6 border-t-4 border-t-purple-500">
+                <p class="text-sm font-medium text-slate-500">Total Views</p>
+                <p class="text-3xl font-bold text-slate-900 mt-1" id="kpi-total-views">-</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-6 border-t-4 border-t-emerald-500">
+                <p class="text-sm font-medium text-slate-500">Total Applications</p>
+                <p class="text-3xl font-bold text-slate-900 mt-1" id="kpi-total-apps">-</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-6 border-t-4 border-t-amber-500">
+                <p class="text-sm font-medium text-slate-500">Avg. Conversion Rate</p>
+                <p class="text-3xl font-bold text-slate-900 mt-1" id="kpi-avg-conv">-</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-6 mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
+                <h2 class="text-lg font-bold text-slate-800">Job Posts Volume <span class="text-sm font-normal text-slate-400 ml-2">(Filtered)</span></h2>
+                <div class="flex gap-3">
+                    <select id="chartGroupSelector" onchange="changeChartSettings()" class="border border-gray-300 text-sm font-medium rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 bg-slate-50">
+                        <option value="day">By Day</option>
+                        <option value="week">By Week</option>
+                        <option value="month">By Month</option>
+                    </select>
+                    <select id="chartPeriodSelector" onchange="changeChartSettings()" class="border border-gray-300 text-sm font-medium rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 bg-slate-50">
+                        <option value="7">Last 7 Days</option>
+                        <option value="30">Last 30 Days</option>
+                        <option value="90">Last 90 Days</option>
+                        <option value="all">All Time</option>
+                    </select>
+                </div>
+            </div>
+            <div class="relative h-64 w-full">
+                <canvas id="jobsChart"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-slate-100 mb-6 p-4 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+            <div class="relative w-full">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <input type="text" id="searchInput" placeholder="Search employer or job title..." class="w-full border border-gray-300 rounded-md pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <div class="w-full">
+                <select id="locationFilter" onchange="changeLocationFilter()" class="w-full border border-gray-300 text-sm rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50">
+                    <option value="all">All Locations</option>
+                    </select>
+            </div>
+
+            <div class="w-full">
+                <select id="statusFilter" class="w-full border border-gray-300 text-sm rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50">
+                    <option value="all">All Statuses</option>
+                    <option value="premium">Pinned & Featured</option>
+                    <option value="needs_attention">⚠️ Needs Attention (>50 views, 0 Apps)</option>
+                    <option value="expiring">⏳ Expiring Soon (< 7 Days)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-slate-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Employer</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Job Title</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider cursor-pointer group" onclick="sortTable('views')">
+                                <div class="flex items-center justify-center">Views <svg class="w-4 h-4 ml-1 text-gray-400 group-hover:text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path></svg></div>
+                            </th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider cursor-pointer group" onclick="sortTable('totalApps')">
+                                <div class="flex items-center justify-center">Total Apps <svg class="w-4 h-4 ml-1 text-gray-400 group-hover:text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path></svg></div>
+                            </th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider cursor-pointer group" onclick="sortTable('conversion')">
+                                <div class="flex items-center justify-center">Conv. % <svg class="w-4 h-4 ml-1 text-gray-400 group-hover:text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path></svg></div>
+                            </th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Status Tags</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="bg-white divide-y divide-gray-100 text-sm">
+                        <tr>
+                            <td colspan="6" class="px-6 py-12 text-center">
+                                <div class="flex justify-center items-center flex-col">
+                                    <svg class="animate-spin h-8 w-8 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                    <p class="text-slate-500">Fetching live job data...</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiUrl = 'https://gippsland-jobs-proxy.vercel.app/api/jobs?towns=';
+        let jobsData = [];
+        let currentSort = { column: 'posted_at', order: 'desc' }; 
+        let chartInstance = null;
+        let autoRefreshTimer = null;
+        let filteredDataCache = []; 
+
+        // Local Storage Keys
+        const LS_REFRESH_KEY = 'gippslander_refresh_rate';
+        const LS_CHART_PERIOD_KEY = 'gippslander_chart_period';
+        const LS_CHART_GROUP_KEY = 'gippslander_chart_group';
+        const LS_LOCATION_KEY = 'gippslander_location_filter';
+
+        // SVGs for Badges
+        const pinSvg = `<svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C9.5 2 7.5 4 7.5 6.5c0 1.5.8 2.8 2 3.5V19l1.5 3 1.5-3v-9c1.2-.7 2-2 2-3.5C14.5 4 12.5 2 12 2z"/></svg>`;
+        const starSvg = `<svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`;
+        const alertSvg = `<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`;
+        const clockSvg = `<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load saved preferences
+            const savedRefresh = localStorage.getItem(LS_REFRESH_KEY) || '3600000';
+            const savedChartPeriod = localStorage.getItem(LS_CHART_PERIOD_KEY) || '30';
+            const savedChartGroup = localStorage.getItem(LS_CHART_GROUP_KEY) || 'day';
+            
+            document.getElementById('refreshSelector').value = savedRefresh;
+            document.getElementById('chartPeriodSelector').value = savedChartPeriod;
+            document.getElementById('chartGroupSelector').value = savedChartGroup;
+            
+            applyRefreshSettings(savedRefresh);
+            fetchData(false);
+        });
+
+        document.getElementById('searchInput').addEventListener('input', renderTable);
+        document.getElementById('statusFilter').addEventListener('change', renderTable);
+
+        // -- User Setting Handlers --
+        function changeRefreshRate() {
+            const val = document.getElementById('refreshSelector').value;
+            localStorage.setItem(LS_REFRESH_KEY, val);
+            applyRefreshSettings(val);
+        }
+
+        function changeChartSettings() {
+            const periodVal = document.getElementById('chartPeriodSelector').value;
+            const groupVal = document.getElementById('chartGroupSelector').value;
+            localStorage.setItem(LS_CHART_PERIOD_KEY, periodVal);
+            localStorage.setItem(LS_CHART_GROUP_KEY, groupVal);
+            renderChart(filteredDataCache); 
+        }
+
+        function changeLocationFilter() {
+            const val = document.getElementById('locationFilter').value;
+            localStorage.setItem(LS_LOCATION_KEY, val);
+            renderTable();
+        }
+
+        function applyRefreshSettings(val) {
+            clearInterval(autoRefreshTimer);
+            const statusText = document.getElementById('refreshStatusText');
+            const indicator = document.getElementById('liveIndicator');
+
+            if (val === 'off') {
+                statusText.innerText = "(Auto-refresh paused)";
+                indicator.classList.remove('animate-pulse', 'text-emerald-500');
+                indicator.classList.add('text-gray-300');
+            } else {
+                let mins = parseInt(val) / 60000;
+                statusText.innerText = `(Auto-refreshes every ${mins} min${mins>1?'s':''})`;
+                indicator.classList.add('animate-pulse', 'text-emerald-500');
+                indicator.classList.remove('text-gray-300');
+                autoRefreshTimer = setInterval(() => fetchData(false), parseInt(val));
+            }
+        }
+
+        // -- Date Helper Functions --
+        function getWeekStart(dateStr) {
+            const d = new Date(dateStr);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is sunday
+            const start = new Date(d.setDate(diff));
+            return start.toISOString().split('T')[0];
+        }
+
+        function getMonthStart(dateStr) {
+            const d = new Date(dateStr);
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`;
+        }
+
+        // -- Data Fetching --
+        async function fetchData(isManualRefresh) {
+            const refreshIcon = document.getElementById('refreshIcon');
+            if (isManualRefresh) {
+                refreshIcon.classList.add('animate-spin');
+                const currentRefreshVal = document.getElementById('refreshSelector').value;
+                applyRefreshSettings(currentRefreshVal);
+            }
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                const now = new Date();
+                
+                jobsData = data.map(job => {
+                    const views = job.statistics?.views_count || 0;
+                    const applies = job.statistics?.applies_count || 0; 
+                    const applications = job.statistics?.applications_count || 0; 
+                    const totalApps = applies + applications;
+                    const conversion = views > 0 ? ((totalApps / views) * 100).toFixed(1) : 0;
+
+                    let daysLeft = 999;
+                    if (job.posted_at && job.job_expires_in_days) {
+                        const postedDate = new Date(job.posted_at);
+                        const expiryDate = new Date(postedDate.getTime() + (job.job_expires_in_days * 24 * 60 * 60 * 1000));
+                        daysLeft = (expiryDate - now) / (1000 * 60 * 60 * 24);
+                    }
+
+                    // Standardize location string (e.g., "Traralgon, Victoria, Australia" -> "Traralgon")
+                    let simpleLocation = job.location ? job.location.split(',')[0].trim() : 'Unknown';
+
+                    return {
+                        id: job.id,
+                        employer: job.employer?.name || 'Unknown',
+                        title: job.title,
+                        url: job.job_details_url,
+                        views: views,
+                        totalApps: totalApps,
+                        conversion: parseFloat(conversion),
+                        isPinned: job.pin_to_top,
+                        isFeatured: job.featured,
+                        location: job.location,
+                        simpleLocation: simpleLocation,
+                        posted_at: job.posted_at ? new Date(job.posted_at).toISOString().split('T')[0] : 'Unknown',
+                        daysLeft: daysLeft,
+                        needsAttention: (views > 50 && totalApps === 0),
+                        expiringSoon: (daysLeft < 7 && daysLeft >= 0)
+                    };
+                });
+
+                // Populate Location Dropdown Dynamically
+                const uniqueLocations = [...new Set(jobsData.map(j => j.simpleLocation))].filter(l => l !== 'Unknown').sort();
+                const locSelect = document.getElementById('locationFilter');
+                const savedLoc = localStorage.getItem(LS_LOCATION_KEY) || 'all';
+                
+                locSelect.innerHTML = '<option value="all">All Locations</option>';
+                uniqueLocations.forEach(loc => {
+                    locSelect.innerHTML += `<option value="${loc}">${loc}</option>`;
+                });
+                
+                // Select saved location if it still exists in the data
+                if (uniqueLocations.includes(savedLoc)) {
+                    locSelect.value = savedLoc;
+                } else {
+                    locSelect.value = 'all';
+                    localStorage.setItem(LS_LOCATION_KEY, 'all');
+                }
+
+                document.getElementById('lastUpdated').innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+                renderTable();
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
+                if (isManualRefresh) setTimeout(() => refreshIcon.classList.remove('animate-spin'), 500);
+            }
+        }
+
+        // -- Table & Rendering --
+        function sortTable(column) {
+            if (currentSort.column === column) {
+                currentSort.order = currentSort.order === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.column = column;
+                currentSort.order = 'desc';
+            }
+            renderTable();
+        }
+
+        function renderTable() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const locFilter = document.getElementById('locationFilter').value;
+
+            let filteredData = jobsData.filter(job => {
+                const matchesSearch = job.title.toLowerCase().includes(searchTerm) || job.employer.toLowerCase().includes(searchTerm);
+                
+                let matchesStatus = true;
+                if (statusFilter === 'premium') matchesStatus = job.isPinned || job.isFeatured;
+                if (statusFilter === 'needs_attention') matchesStatus = job.needsAttention;
+                if (statusFilter === 'expiring') matchesStatus = job.expiringSoon;
+
+                let matchesLoc = true;
+                if (locFilter !== 'all') matchesLoc = job.simpleLocation === locFilter;
+
+                return matchesSearch && matchesStatus && matchesLoc;
+            });
+
+            filteredData.sort((a, b) => {
+                let valA = a[currentSort.column];
+                let valB = b[currentSort.column];
+                if (currentSort.order === 'asc') return valA > valB ? 1 : -1;
+                return valA < valB ? 1 : -1;
+            });
+
+            filteredDataCache = filteredData;
+            updateKPIs(filteredData);
+            renderChart(filteredData); 
+
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            if (filteredData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-8 text-center text-gray-500">No jobs found matching your criteria.</td></tr>`;
+                return;
+            }
+
+            filteredData.forEach(job => {
+                let convColor = 'text-slate-600';
+                if (job.conversion >= 10) convColor = 'text-emerald-600 font-bold';
+                else if (job.conversion > 0) convColor = 'text-blue-600 font-semibold';
+                else if (job.needsAttention) convColor = 'text-red-500 font-bold';
+
+                let badges = '';
+                if (job.needsAttention) badges += `<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-medium bg-red-50 text-red-700 mr-1 border border-red-200">${alertSvg} Needs Attention</span>`;
+                if (job.expiringSoon) badges += `<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-medium bg-orange-50 text-orange-700 mr-1 border border-orange-200">${clockSvg} Expiring Soon</span>`;
+                if (job.isPinned) badges += `<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-medium bg-purple-50 text-purple-700 mr-1 border border-purple-200">${pinSvg} Pinned</span>`;
+                if (job.isFeatured) badges += `<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-medium bg-blue-50 text-blue-700 border border-blue-200">${starSvg} Featured</span>`;
+                
+                if (badges === '') badges = `<span class="text-slate-300">-</span>`;
+
+                const row = `
+                    <tr class="hover:bg-blue-50/50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap font-semibold text-slate-800">${job.employer}</td>
+                        <td class="px-6 py-4">
+                            <a href="${job.url}" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium hover:underline block truncate max-w-xs" title="${job.title}">
+                                ${job.title}
+                            </a>
+                            <span class="text-xs text-slate-400 mt-1 block">${job.location}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-600">${job.views}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center font-semibold text-slate-700">${job.totalApps}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center ${convColor}">${job.conversion}%</td>
+                        <td class="px-6 py-4 text-left flex flex-wrap gap-1">${badges}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function updateKPIs(data) {
+            const totalJobs = data.length;
+            const totalViews = data.reduce((sum, job) => sum + job.views, 0);
+            const totalApps = data.reduce((sum, job) => sum + job.totalApps, 0);
+            const avgConv = totalViews > 0 ? ((totalApps / totalViews) * 100).toFixed(1) : 0;
+
+            document.getElementById('kpi-total-jobs').innerText = totalJobs;
+            document.getElementById('kpi-total-views').innerText = totalViews.toLocaleString();
+            document.getElementById('kpi-total-apps').innerText = totalApps.toLocaleString();
+            document.getElementById('kpi-avg-conv').innerText = avgConv + '%';
+        }
+
+        // -- Dynamic Charting --
+        function renderChart(dataToChart) {
+            const periodStr = document.getElementById('chartPeriodSelector').value;
+            const groupStr = document.getElementById('chartGroupSelector').value;
+            
+            const now = new Date();
+            now.setHours(0,0,0,0);
+            
+            let cutoffDate = null;
+            if (periodStr !== 'all') {
+                cutoffDate = new Date(now);
+                cutoffDate.setDate(now.getDate() - parseInt(periodStr) + 1);
+            }
+
+            const dateCounts = {};
+
+            // Pre-fill zeros for continuous timelines (only for Day and Week views to keep it clean)
+            if (cutoffDate && groupStr !== 'month') {
+                for (let d = new Date(cutoffDate); d <= now; d.setDate(d.getDate() + 1)) {
+                    const dateStr = d.toISOString().split('T')[0];
+                    let key = dateStr;
+                    if (groupStr === 'week') key = getWeekStart(dateStr);
+                    dateCounts[key] = 0;
+                }
+            }
+
+            // Populate data
+            dataToChart.forEach(job => {
+                if (job.posted_at !== 'Unknown') {
+                    const jobDate = new Date(job.posted_at);
+                    if (!cutoffDate || jobDate >= cutoffDate) {
+                        let key = job.posted_at;
+                        if (groupStr === 'week') key = getWeekStart(job.posted_at);
+                        if (groupStr === 'month') key = getMonthStart(job.posted_at);
+                        
+                        dateCounts[key] = (dateCounts[key] || 0) + 1;
+                    }
+                }
+            });
+
+            const sortedDates = Object.keys(dateCounts).sort();
+            const counts = sortedDates.map(date => dateCounts[date]);
+            
+            // Format labels beautifully based on grouping
+            const displayDates = sortedDates.map(dateStr => {
+                const d = new Date(dateStr);
+                if (groupStr === 'month') {
+                    return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                } else if (groupStr === 'week') {
+                    return 'Wk of ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                } else {
+                    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                }
+            });
+
+            const ctx = document.getElementById('jobsChart').getContext('2d');
+            
+            if (chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: displayDates,
+                    datasets: [{
+                        label: 'Jobs Posted',
+                        data: counts,
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: 'rgb(37, 99, 235)',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.raw} Jobs`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
