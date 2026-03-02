@@ -52,19 +52,19 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
             <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 p-6 border-t-4 border-t-blue-500">
-                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Premium Jobs (Active)</p>
+                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Promoted Jobs (Active)</p>
                 <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1" id="kpi-total-jobs">-</p>
             </div>
             <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 p-6 border-t-4 border-t-purple-500">
-                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Premium Views</p>
+                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Promoted Views</p>
                 <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1" id="kpi-total-views">-</p>
             </div>
             <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 p-6 border-t-4 border-t-emerald-500">
-                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Premium Apps</p>
+                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Promoted Apps</p>
                 <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1" id="kpi-total-apps">-</p>
             </div>
             <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 p-6 border-t-4 border-t-amber-500">
-                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Premium Conv. Rate</p>
+                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Promoted Conv. Rate</p>
                 <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1" id="kpi-avg-conv">-</p>
             </div>
         </div>
@@ -115,18 +115,12 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-3 pt-2 border-t border-gray-100 dark:border-slate-700 mt-1">
-                <span class="text-sm font-medium text-slate-500 dark:text-slate-400 mr-1">Filter by Tags:</span>
+                <span class="text-sm font-medium text-slate-500 dark:text-slate-400 mr-1">Filter (AND):</span>
                 
                 <label class="inline-flex items-center bg-slate-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
-                    <input type="checkbox" id="filterPinned" class="w-4 h-4 text-purple-600 rounded border-gray-300 dark:border-slate-500 focus:ring-purple-500 dark:bg-slate-800 mr-2" onchange="renderTable()">
-                    <svg class="w-4 h-4 mr-1 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C9.5 2 7.5 4 7.5 6.5c0 1.5.8 2.8 2 3.5V19l1.5 3 1.5-3v-9c1.2-.7 2-2 2-3.5C14.5 4 12.5 2 12 2z"/></svg>
-                    Pinned
-                </label>
-                
-                <label class="inline-flex items-center bg-slate-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
-                    <input type="checkbox" id="filterFeatured" class="w-4 h-4 text-blue-600 rounded border-gray-300 dark:border-slate-500 focus:ring-blue-500 dark:bg-slate-800 mr-2" onchange="renderTable()">
-                    <svg class="w-4 h-4 mr-1 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                    Featured
+                    <input type="checkbox" id="filterPromoted" class="w-4 h-4 text-purple-600 rounded border-gray-300 dark:border-slate-500 focus:ring-purple-500 dark:bg-slate-800 mr-2" onchange="renderTable()">
+                    <svg class="w-4 h-4 mr-1 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    Promoted
                 </label>
                 
                 <label class="inline-flex items-center bg-slate-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
@@ -196,9 +190,7 @@
         const LS_CHART_VISIBLE_KEY = 'gippslander_chart_visible';
         const LS_THEME_KEY = 'gippslander_theme';
 
-        const pinSvg = `<svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C9.5 2 7.5 4 7.5 6.5c0 1.5.8 2.8 2 3.5V19l1.5 3 1.5-3v-9c1.2-.7 2-2 2-3.5C14.5 4 12.5 2 12 2z"/></svg>`;
         const starSvg = `<svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`;
-        const alertSvg = `<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path></svg>`;
         const clockSvg = `<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -327,10 +319,9 @@
                     let daysActive = 0;
                     let parsedDateString = 'Unknown';
                     
-                    // Safely Parse Dates
                     if (job.posted_at) {
                         const postedDate = new Date(job.posted_at);
-                        if (!isNaN(postedDate.getTime())) { // Check if valid date
+                        if (!isNaN(postedDate.getTime())) { 
                             parsedDateString = postedDate.toISOString().split('T')[0];
                             daysActive = Math.max(0, Math.floor((now - postedDate) / (1000 * 60 * 60 * 24)));
                             
@@ -363,8 +354,7 @@
                         views: views,
                         totalApps: totalApps,
                         conversion: parseFloat(conversion),
-                        isPinned: !!job.pin_to_top,
-                        isFeatured: !!job.featured,
+                        isPromoted: !!job.pin_to_top || !!job.featured, // Merged Promoted Logic
                         location: job.location || 'Unknown',
                         simpleLocation: simpleLocation,
                         posted_at: parsedDateString,
@@ -420,24 +410,19 @@
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const locFilter = document.getElementById('locationFilter').value;
 
-            const filterPinned = document.getElementById('filterPinned').checked;
-            const filterFeatured = document.getElementById('filterFeatured').checked;
+            // Get Checkbox States
+            const filterPromoted = document.getElementById('filterPromoted').checked;
             const filterUnderperforming = document.getElementById('filterUnderperforming').checked;
             const filterExpiring = document.getElementById('filterExpiring').checked;
-            
-            const hasStatusFilters = filterPinned || filterFeatured || filterUnderperforming || filterExpiring;
 
             let filteredData = jobsData.filter(job => {
                 const matchesSearch = job.title.toLowerCase().includes(searchTerm) || job.employer.toLowerCase().includes(searchTerm);
                 
+                // AND Logic: Job must match every checked box
                 let matchesStatus = true;
-                if (hasStatusFilters) {
-                    matchesStatus = false; 
-                    if (filterPinned && job.isPinned) matchesStatus = true;
-                    if (filterFeatured && job.isFeatured) matchesStatus = true;
-                    if (filterUnderperforming && job.isUnderperforming) matchesStatus = true;
-                    if (filterExpiring && job.expiringSoon) matchesStatus = true;
-                }
+                if (filterPromoted && !job.isPromoted) matchesStatus = false;
+                if (filterUnderperforming && !job.isUnderperforming) matchesStatus = false;
+                if (filterExpiring && !job.expiringSoon) matchesStatus = false;
 
                 let matchesLoc = true;
                 if (locFilter !== 'all') matchesLoc = job.simpleLocation === locFilter;
@@ -454,7 +439,6 @@
 
             filteredDataCache = filteredData;
             
-            // Safety wrapper around chart building
             try {
                 renderChart(filteredData); 
             } catch (e) {
@@ -491,8 +475,7 @@
 
                 let badges = '';
                 if (job.expiringSoon) badges += `<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-medium bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 border border-orange-200 dark:border-orange-800/50 mr-1">${clockSvg} Expiring Soon</span>`;
-                if (job.isPinned) badges += `<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-medium bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border border-purple-200 dark:border-purple-800/50 mr-1">${pinSvg} Pinned</span>`;
-                if (job.isFeatured) badges += `<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800/50 mr-1">${starSvg} Featured</span>`;
+                if (job.isPromoted) badges += `<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-medium bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border border-purple-200 dark:border-purple-800/50 mr-1">${starSvg} Promoted</span>`;
                 
                 if (badges === '') badges = `<span class="text-slate-300 dark:text-slate-600">-</span>`;
 
@@ -518,7 +501,7 @@
         }
 
         function updateKPIs(data) {
-            const premiumJobs = data.filter(job => job.isPinned || job.isFeatured);
+            const premiumJobs = data.filter(job => job.isPromoted);
             
             const totalJobs = premiumJobs.length;
             const totalViews = premiumJobs.reduce((sum, job) => sum + job.views, 0);
@@ -599,8 +582,8 @@
                     datasets: [{
                         label: 'Jobs Posted',
                         data: counts,
-                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
-                        borderColor: 'rgb(37, 99, 235)',
+                        backgroundColor: 'rgba(147, 51, 234, 0.7)', // Purple matching promoted theme
+                        borderColor: 'rgb(126, 34, 206)',
                         borderWidth: 1,
                         borderRadius: 4
                     }]
