@@ -43,26 +43,31 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
             <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-6 border-t-4 border-t-blue-500">
-                <p class="text-sm font-medium text-slate-500">Total Active Jobs</p>
+                <p class="text-sm font-medium text-slate-500">Premium Jobs (Active)</p>
                 <p class="text-3xl font-bold text-slate-900 mt-1" id="kpi-total-jobs">-</p>
             </div>
             <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-6 border-t-4 border-t-purple-500">
-                <p class="text-sm font-medium text-slate-500">Total Views</p>
+                <p class="text-sm font-medium text-slate-500">Premium Views</p>
                 <p class="text-3xl font-bold text-slate-900 mt-1" id="kpi-total-views">-</p>
             </div>
             <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-6 border-t-4 border-t-emerald-500">
-                <p class="text-sm font-medium text-slate-500">Total Applications</p>
+                <p class="text-sm font-medium text-slate-500">Premium Apps</p>
                 <p class="text-3xl font-bold text-slate-900 mt-1" id="kpi-total-apps">-</p>
             </div>
             <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-6 border-t-4 border-t-amber-500">
-                <p class="text-sm font-medium text-slate-500">Avg. Conversion Rate</p>
+                <p class="text-sm font-medium text-slate-500">Premium Conv. Rate</p>
                 <p class="text-3xl font-bold text-slate-900 mt-1" id="kpi-avg-conv">-</p>
             </div>
         </div>
 
         <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-6 mb-8">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
-                <h2 class="text-lg font-bold text-slate-800">Job Posts Volume <span class="text-sm font-normal text-slate-400 ml-2">(Filtered)</span></h2>
+                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-3">
+                    Job Posts Volume <span class="text-sm font-normal text-slate-400 hidden sm:inline">(Filtered)</span>
+                    <button id="toggleChartBtn" onclick="toggleChart()" class="text-xs text-blue-600 hover:text-blue-800 font-medium cursor-pointer bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded border border-blue-200 transition-colors">
+                        Hide Chart
+                    </button>
+                </h2>
                 <div class="flex gap-3">
                     <select id="chartGroupSelector" onchange="changeChartSettings()" class="border border-gray-300 text-sm font-medium rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 bg-slate-50">
                         <option value="day">By Day</option>
@@ -77,7 +82,7 @@
                     </select>
                 </div>
             </div>
-            <div class="relative h-64 w-full">
+            <div id="chartWrapper" class="relative h-64 w-full transition-all duration-300">
                 <canvas id="jobsChart"></canvas>
             </div>
         </div>
@@ -95,7 +100,7 @@
             <div class="w-full">
                 <select id="locationFilter" onchange="changeLocationFilter()" class="w-full border border-gray-300 text-sm rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50">
                     <option value="all">All Locations</option>
-                    </select>
+                </select>
             </div>
 
             <div class="w-full">
@@ -149,12 +154,14 @@
         let chartInstance = null;
         let autoRefreshTimer = null;
         let filteredDataCache = []; 
+        let isChartVisible = true;
 
         // Local Storage Keys
         const LS_REFRESH_KEY = 'gippslander_refresh_rate';
         const LS_CHART_PERIOD_KEY = 'gippslander_chart_period';
         const LS_CHART_GROUP_KEY = 'gippslander_chart_group';
         const LS_LOCATION_KEY = 'gippslander_location_filter';
+        const LS_CHART_VISIBLE_KEY = 'gippslander_chart_visible';
 
         // SVGs for Badges
         const pinSvg = `<svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C9.5 2 7.5 4 7.5 6.5c0 1.5.8 2.8 2 3.5V19l1.5 3 1.5-3v-9c1.2-.7 2-2 2-3.5C14.5 4 12.5 2 12 2z"/></svg>`;
@@ -167,12 +174,14 @@
             const savedRefresh = localStorage.getItem(LS_REFRESH_KEY) || '3600000';
             const savedChartPeriod = localStorage.getItem(LS_CHART_PERIOD_KEY) || '30';
             const savedChartGroup = localStorage.getItem(LS_CHART_GROUP_KEY) || 'day';
+            isChartVisible = localStorage.getItem(LS_CHART_VISIBLE_KEY) !== 'false';
             
             document.getElementById('refreshSelector').value = savedRefresh;
             document.getElementById('chartPeriodSelector').value = savedChartPeriod;
             document.getElementById('chartGroupSelector').value = savedChartGroup;
             
             applyRefreshSettings(savedRefresh);
+            applyChartVisibility();
             fetchData(false);
         });
 
@@ -180,6 +189,25 @@
         document.getElementById('statusFilter').addEventListener('change', renderTable);
 
         // -- User Setting Handlers --
+        function toggleChart() {
+            isChartVisible = !isChartVisible;
+            localStorage.setItem(LS_CHART_VISIBLE_KEY, isChartVisible);
+            applyChartVisibility();
+        }
+
+        function applyChartVisibility() {
+            const wrapper = document.getElementById('chartWrapper');
+            const btn = document.getElementById('toggleChartBtn');
+            
+            if (isChartVisible) {
+                wrapper.style.display = 'block';
+                btn.innerText = 'Hide Chart';
+            } else {
+                wrapper.style.display = 'none';
+                btn.innerText = 'Show Chart';
+            }
+        }
+
         function changeRefreshRate() {
             const val = document.getElementById('refreshSelector').value;
             localStorage.setItem(LS_REFRESH_KEY, val);
@@ -260,7 +288,7 @@
                         daysLeft = (expiryDate - now) / (1000 * 60 * 60 * 24);
                     }
 
-                    // Standardize location string (e.g., "Traralgon, Victoria, Australia" -> "Traralgon")
+                    // Standardize location string
                     let simpleLocation = job.location ? job.location.split(',')[0].trim() : 'Unknown';
 
                     return {
@@ -301,10 +329,15 @@
                 }
 
                 document.getElementById('lastUpdated').innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+                
+                // Important: Update KPIs based on the global jobsData so it strictly monitors premium jobs
+                updateKPIs(jobsData);
                 renderTable();
 
             } catch (error) {
                 console.error("Error fetching data:", error);
+                const tbody = document.getElementById('tableBody');
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-red-500 font-medium">Failed to load data. Please check your connection or try refreshing.</td></tr>`;
             } finally {
                 if (isManualRefresh) setTimeout(() => refreshIcon.classList.remove('animate-spin'), 500);
             }
@@ -348,7 +381,6 @@
             });
 
             filteredDataCache = filteredData;
-            updateKPIs(filteredData);
             renderChart(filteredData); 
 
             const tbody = document.getElementById('tableBody');
@@ -392,10 +424,13 @@
             });
         }
 
+        // Modified KPI updater to strictly monitor premium jobs regardless of table filters
         function updateKPIs(data) {
-            const totalJobs = data.length;
-            const totalViews = data.reduce((sum, job) => sum + job.views, 0);
-            const totalApps = data.reduce((sum, job) => sum + job.totalApps, 0);
+            const premiumJobs = data.filter(job => job.isPinned || job.isFeatured);
+            
+            const totalJobs = premiumJobs.length;
+            const totalViews = premiumJobs.reduce((sum, job) => sum + job.views, 0);
+            const totalApps = premiumJobs.reduce((sum, job) => sum + job.totalApps, 0);
             const avgConv = totalViews > 0 ? ((totalApps / totalViews) * 100).toFixed(1) : 0;
 
             document.getElementById('kpi-total-jobs').innerText = totalJobs;
@@ -420,7 +455,7 @@
 
             const dateCounts = {};
 
-            // Pre-fill zeros for continuous timelines (only for Day and Week views to keep it clean)
+            // Pre-fill zeros for continuous timelines
             if (cutoffDate && groupStr !== 'month') {
                 for (let d = new Date(cutoffDate); d <= now; d.setDate(d.getDate() + 1)) {
                     const dateStr = d.toISOString().split('T')[0];
@@ -447,7 +482,7 @@
             const sortedDates = Object.keys(dateCounts).sort();
             const counts = sortedDates.map(date => dateCounts[date]);
             
-            // Format labels beautifully based on grouping
+            // Format labels
             const displayDates = sortedDates.map(dateStr => {
                 const d = new Date(dateStr);
                 if (groupStr === 'month') {
