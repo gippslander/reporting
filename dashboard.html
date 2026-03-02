@@ -87,29 +87,50 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-sm border border-slate-100 mb-6 p-4 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-            <div class="relative w-full">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
+        <div class="bg-white rounded-lg shadow-sm border border-slate-100 mb-6 p-4 flex flex-col gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="relative w-full">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <input type="text" id="searchInput" placeholder="Search employer or job title..." class="w-full border border-gray-300 rounded-md pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
-                <input type="text" id="searchInput" placeholder="Search employer or job title..." class="w-full border border-gray-300 rounded-md pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            
-            <div class="w-full">
-                <select id="locationFilter" onchange="changeLocationFilter()" class="w-full border border-gray-300 text-sm rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50">
-                    <option value="all">All Locations</option>
-                </select>
+                
+                <div class="w-full">
+                    <select id="locationFilter" onchange="changeLocationFilter()" class="w-full border border-gray-300 text-sm rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50">
+                        <option value="all">All Locations</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="w-full">
-                <select id="statusFilter" class="w-full border border-gray-300 text-sm rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50">
-                    <option value="all">All Statuses</option>
-                    <option value="premium">Pinned & Featured</option>
-                    <option value="needs_attention">⚠️ Needs Attention (>50 views, 0 Apps)</option>
-                    <option value="expiring">⏳ Expiring Soon (< 7 Days)</option>
-                </select>
+            <div class="flex flex-wrap items-center gap-3 pt-2 border-t border-gray-100 mt-1">
+                <span class="text-sm font-medium text-slate-500 mr-1">Filter by Tags:</span>
+                
+                <label class="inline-flex items-center bg-slate-50 border border-gray-200 rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 cursor-pointer hover:bg-slate-100 transition-colors">
+                    <input type="checkbox" id="filterPinned" class="w-4 h-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500 mr-2" onchange="renderTable()">
+                    <svg class="w-4 h-4 mr-1 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C9.5 2 7.5 4 7.5 6.5c0 1.5.8 2.8 2 3.5V19l1.5 3 1.5-3v-9c1.2-.7 2-2 2-3.5C14.5 4 12.5 2 12 2z"/></svg>
+                    Pinned
+                </label>
+                
+                <label class="inline-flex items-center bg-slate-50 border border-gray-200 rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 cursor-pointer hover:bg-slate-100 transition-colors">
+                    <input type="checkbox" id="filterFeatured" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2" onchange="renderTable()">
+                    <svg class="w-4 h-4 mr-1 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    Featured
+                </label>
+                
+                <label class="inline-flex items-center bg-slate-50 border border-gray-200 rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 cursor-pointer hover:bg-slate-100 transition-colors">
+                    <input type="checkbox" id="filterAttention" class="w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500 mr-2" onchange="renderTable()">
+                    <svg class="w-4 h-4 mr-1 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    Needs Attention
+                </label>
+
+                <label class="inline-flex items-center bg-slate-50 border border-gray-200 rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 cursor-pointer hover:bg-slate-100 transition-colors">
+                    <input type="checkbox" id="filterExpiring" class="w-4 h-4 text-orange-600 rounded border-gray-300 focus:ring-orange-500 mr-2" onchange="renderTable()">
+                    <svg class="w-4 h-4 mr-1 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Expiring Soon
+                </label>
             </div>
         </div>
 
@@ -186,7 +207,6 @@
         });
 
         document.getElementById('searchInput').addEventListener('input', renderTable);
-        document.getElementById('statusFilter').addEventListener('change', renderTable);
 
         // -- User Setting Handlers --
         function toggleChart() {
@@ -250,7 +270,7 @@
         function getWeekStart(dateStr) {
             const d = new Date(dateStr);
             const day = d.getDay();
-            const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is sunday
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
             const start = new Date(d.setDate(diff));
             return start.toISOString().split('T')[0];
         }
@@ -288,7 +308,6 @@
                         daysLeft = (expiryDate - now) / (1000 * 60 * 60 * 24);
                     }
 
-                    // Standardize location string
                     let simpleLocation = job.location ? job.location.split(',')[0].trim() : 'Unknown';
 
                     return {
@@ -310,7 +329,7 @@
                     };
                 });
 
-                // Populate Location Dropdown Dynamically
+                // Populate Location Dropdown
                 const uniqueLocations = [...new Set(jobsData.map(j => j.simpleLocation))].filter(l => l !== 'Unknown').sort();
                 const locSelect = document.getElementById('locationFilter');
                 const savedLoc = localStorage.getItem(LS_LOCATION_KEY) || 'all';
@@ -320,7 +339,6 @@
                     locSelect.innerHTML += `<option value="${loc}">${loc}</option>`;
                 });
                 
-                // Select saved location if it still exists in the data
                 if (uniqueLocations.includes(savedLoc)) {
                     locSelect.value = savedLoc;
                 } else {
@@ -330,7 +348,6 @@
 
                 document.getElementById('lastUpdated').innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
                 
-                // Important: Update KPIs based on the global jobsData so it strictly monitors premium jobs
                 updateKPIs(jobsData);
                 renderTable();
 
@@ -356,16 +373,28 @@
 
         function renderTable() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const statusFilter = document.getElementById('statusFilter').value;
             const locFilter = document.getElementById('locationFilter').value;
+
+            // Get Checkbox States
+            const filterPinned = document.getElementById('filterPinned').checked;
+            const filterFeatured = document.getElementById('filterFeatured').checked;
+            const filterAttention = document.getElementById('filterAttention').checked;
+            const filterExpiring = document.getElementById('filterExpiring').checked;
+            
+            const hasStatusFilters = filterPinned || filterFeatured || filterAttention || filterExpiring;
 
             let filteredData = jobsData.filter(job => {
                 const matchesSearch = job.title.toLowerCase().includes(searchTerm) || job.employer.toLowerCase().includes(searchTerm);
                 
+                // Multi-select Status Filter Logic (OR logic)
                 let matchesStatus = true;
-                if (statusFilter === 'premium') matchesStatus = job.isPinned || job.isFeatured;
-                if (statusFilter === 'needs_attention') matchesStatus = job.needsAttention;
-                if (statusFilter === 'expiring') matchesStatus = job.expiringSoon;
+                if (hasStatusFilters) {
+                    matchesStatus = false; 
+                    if (filterPinned && job.isPinned) matchesStatus = true;
+                    if (filterFeatured && job.isFeatured) matchesStatus = true;
+                    if (filterAttention && job.needsAttention) matchesStatus = true;
+                    if (filterExpiring && job.expiringSoon) matchesStatus = true;
+                }
 
                 let matchesLoc = true;
                 if (locFilter !== 'all') matchesLoc = job.simpleLocation === locFilter;
@@ -424,7 +453,6 @@
             });
         }
 
-        // Modified KPI updater to strictly monitor premium jobs regardless of table filters
         function updateKPIs(data) {
             const premiumJobs = data.filter(job => job.isPinned || job.isFeatured);
             
@@ -455,7 +483,6 @@
 
             const dateCounts = {};
 
-            // Pre-fill zeros for continuous timelines
             if (cutoffDate && groupStr !== 'month') {
                 for (let d = new Date(cutoffDate); d <= now; d.setDate(d.getDate() + 1)) {
                     const dateStr = d.toISOString().split('T')[0];
@@ -465,7 +492,6 @@
                 }
             }
 
-            // Populate data
             dataToChart.forEach(job => {
                 if (job.posted_at !== 'Unknown') {
                     const jobDate = new Date(job.posted_at);
@@ -482,7 +508,6 @@
             const sortedDates = Object.keys(dateCounts).sort();
             const counts = sortedDates.map(date => dateCounts[date]);
             
-            // Format labels
             const displayDates = sortedDates.map(dateStr => {
                 const d = new Date(dateStr);
                 if (groupStr === 'month') {
