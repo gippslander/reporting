@@ -118,7 +118,7 @@
                 <span class="text-sm font-medium text-slate-500 dark:text-slate-400 mr-1">Filter (AND):</span>
                 
                 <label class="inline-flex items-center bg-slate-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
-                    <input type="checkbox" id="filterPromoted" class="w-4 h-4 text-purple-600 rounded border-gray-300 dark:border-slate-500 focus:ring-purple-500 dark:bg-slate-800 mr-2" onchange="renderTable()">
+                    <input type="checkbox" id="filterPromoted" class="w-4 h-4 text-purple-600 rounded border-gray-300 dark:border-slate-500 focus:ring-purple-500 dark:bg-slate-800 mr-2" onchange="renderTable()" checked>
                     <svg class="w-4 h-4 mr-1 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
                     Promoted
                 </label>
@@ -354,7 +354,7 @@
                         views: views,
                         totalApps: totalApps,
                         conversion: parseFloat(conversion),
-                        isPromoted: !!job.pin_to_top || !!job.featured, // Merged Promoted Logic
+                        isPromoted: !!job.pin_to_top || !!job.featured, 
                         location: job.location || 'Unknown',
                         simpleLocation: simpleLocation,
                         posted_at: parsedDateString,
@@ -410,7 +410,6 @@
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const locFilter = document.getElementById('locationFilter').value;
 
-            // Get Checkbox States
             const filterPromoted = document.getElementById('filterPromoted').checked;
             const filterUnderperforming = document.getElementById('filterUnderperforming').checked;
             const filterExpiring = document.getElementById('filterExpiring').checked;
@@ -418,7 +417,6 @@
             let filteredData = jobsData.filter(job => {
                 const matchesSearch = job.title.toLowerCase().includes(searchTerm) || job.employer.toLowerCase().includes(searchTerm);
                 
-                // AND Logic: Job must match every checked box
                 let matchesStatus = true;
                 if (filterPromoted && !job.isPromoted) matchesStatus = false;
                 if (filterUnderperforming && !job.isUnderperforming) matchesStatus = false;
@@ -582,7 +580,7 @@
                     datasets: [{
                         label: 'Jobs Posted',
                         data: counts,
-                        backgroundColor: 'rgba(147, 51, 234, 0.7)', // Purple matching promoted theme
+                        backgroundColor: 'rgba(147, 51, 234, 0.7)', 
                         borderColor: 'rgb(126, 34, 206)',
                         borderWidth: 1,
                         borderRadius: 4
