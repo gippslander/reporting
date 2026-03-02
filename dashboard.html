@@ -189,7 +189,6 @@
         let filteredDataCache = []; 
         let isChartVisible = true;
 
-        // Local Storage Keys
         const LS_REFRESH_KEY = 'gippslander_refresh_rate';
         const LS_CHART_PERIOD_KEY = 'gippslander_chart_period';
         const LS_CHART_GROUP_KEY = 'gippslander_chart_group';
@@ -197,19 +196,16 @@
         const LS_CHART_VISIBLE_KEY = 'gippslander_chart_visible';
         const LS_THEME_KEY = 'gippslander_theme';
 
-        // SVGs for Badges
         const pinSvg = `<svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C9.5 2 7.5 4 7.5 6.5c0 1.5.8 2.8 2 3.5V19l1.5 3 1.5-3v-9c1.2-.7 2-2 2-3.5C14.5 4 12.5 2 12 2z"/></svg>`;
         const starSvg = `<svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`;
         const alertSvg = `<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path></svg>`;
         const clockSvg = `<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Theme setup
             if (localStorage.getItem(LS_THEME_KEY) === 'dark' || (!localStorage.getItem(LS_THEME_KEY) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
             }
 
-            // Load saved preferences
             const savedRefresh = localStorage.getItem(LS_REFRESH_KEY) || '3600000';
             const savedChartPeriod = localStorage.getItem(LS_CHART_PERIOD_KEY) || '30';
             const savedChartGroup = localStorage.getItem(LS_CHART_GROUP_KEY) || 'day';
@@ -226,12 +222,11 @@
 
         document.getElementById('searchInput').addEventListener('input', renderTable);
 
-        // -- User Setting Handlers --
         function toggleDarkMode() {
             document.documentElement.classList.toggle('dark');
             const isDark = document.documentElement.classList.contains('dark');
             localStorage.setItem(LS_THEME_KEY, isDark ? 'dark' : 'light');
-            if(chartInstance) renderChart(filteredDataCache); // Re-render to update chart grid colors
+            if(chartInstance) renderChart(filteredDataCache); 
         }
 
         function toggleChart() {
@@ -291,7 +286,6 @@
             }
         }
 
-        // -- Date Helper Functions --
         function getWeekStart(dateStr) {
             const d = new Date(dateStr);
             const day = d.getDay();
@@ -305,7 +299,6 @@
             return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`;
         }
 
-        // -- Data Fetching --
         async function fetchData(isManualRefresh) {
             const refreshIcon = document.getElementById('refreshIcon');
             if (isManualRefresh) {
@@ -316,7 +309,11 @@
 
             try {
                 const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error(`API returned status ${response.status}`);
+                
                 const data = await response.json();
+                if (!Array.isArray(data)) throw new Error("API did not return an array of jobs.");
+                
                 const now = new Date();
                 
                 jobsData = data.map(job => {
@@ -328,29 +325,32 @@
 
                     let daysLeft = 999;
                     let daysActive = 0;
+                    let parsedDateString = 'Unknown';
                     
+                    // Safely Parse Dates
                     if (job.posted_at) {
                         const postedDate = new Date(job.posted_at);
-                        // Calculate days active based on current time
-                        daysActive = Math.max(0, Math.floor((now - postedDate) / (1000 * 60 * 60 * 24)));
-                        
-                        if (job.job_expires_in_days) {
-                            const expiryDate = new Date(postedDate.getTime() + (job.job_expires_in_days * 24 * 60 * 60 * 1000));
-                            daysLeft = (expiryDate - now) / (1000 * 60 * 60 * 24);
+                        if (!isNaN(postedDate.getTime())) { // Check if valid date
+                            parsedDateString = postedDate.toISOString().split('T')[0];
+                            daysActive = Math.max(0, Math.floor((now - postedDate) / (1000 * 60 * 60 * 24)));
+                            
+                            if (job.job_expires_in_days && !isNaN(job.job_expires_in_days)) {
+                                const expiryDate = new Date(postedDate.getTime() + (job.job_expires_in_days * 24 * 60 * 60 * 1000));
+                                daysLeft = (expiryDate - now) / (1000 * 60 * 60 * 24);
+                            }
                         }
                     }
 
-                    // Performance / Health Logic
                     let healthScore = 'normal';
                     let isUnderperforming = false;
 
                     if (daysActive <= 3) {
-                        healthScore = 'new'; // Give new jobs a grace period
+                        healthScore = 'new'; 
                     } else if (totalApps === 0 || parseFloat(conversion) < 2.0) {
-                        healthScore = 'poor'; // Needs immediate attention
+                        healthScore = 'poor'; 
                         isUnderperforming = true;
                     } else if (parseFloat(conversion) >= 8.0 && totalApps > 2) {
-                        healthScore = 'excellent'; // Doing great
+                        healthScore = 'excellent'; 
                     }
 
                     let simpleLocation = job.location ? job.location.split(',')[0].trim() : 'Unknown';
@@ -358,16 +358,16 @@
                     return {
                         id: job.id,
                         employer: job.employer?.name || 'Unknown',
-                        title: job.title,
-                        url: job.job_details_url,
+                        title: job.title || 'Untitled Job',
+                        url: job.job_details_url || '#',
                         views: views,
                         totalApps: totalApps,
                         conversion: parseFloat(conversion),
-                        isPinned: job.pin_to_top,
-                        isFeatured: job.featured,
-                        location: job.location,
+                        isPinned: !!job.pin_to_top,
+                        isFeatured: !!job.featured,
+                        location: job.location || 'Unknown',
                         simpleLocation: simpleLocation,
-                        posted_at: job.posted_at ? new Date(job.posted_at).toISOString().split('T')[0] : 'Unknown',
+                        posted_at: parsedDateString,
                         daysActive: daysActive,
                         daysLeft: daysLeft,
                         health: healthScore,
@@ -376,7 +376,6 @@
                     };
                 });
 
-                // Populate Location Dropdown
                 const uniqueLocations = [...new Set(jobsData.map(j => j.simpleLocation))].filter(l => l !== 'Unknown').sort();
                 const locSelect = document.getElementById('locationFilter');
                 const savedLoc = localStorage.getItem(LS_LOCATION_KEY) || 'all';
@@ -401,13 +400,12 @@
             } catch (error) {
                 console.error("Error fetching data:", error);
                 const tbody = document.getElementById('tableBody');
-                tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-12 text-center text-red-500 font-medium">Failed to load data. Please check your connection or try refreshing.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-12 text-center text-red-500 font-medium bg-red-50 dark:bg-red-900/10">Failed to load data: ${error.message}. <br><span class="text-sm font-normal text-slate-500">Please try refreshing or check the developer console.</span></td></tr>`;
             } finally {
                 if (isManualRefresh) setTimeout(() => refreshIcon.classList.remove('animate-spin'), 500);
             }
         }
 
-        // -- Table & Rendering --
         function sortTable(column) {
             if (currentSort.column === column) {
                 currentSort.order = currentSort.order === 'asc' ? 'desc' : 'asc';
@@ -422,7 +420,6 @@
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const locFilter = document.getElementById('locationFilter').value;
 
-            // Get Checkbox States
             const filterPinned = document.getElementById('filterPinned').checked;
             const filterFeatured = document.getElementById('filterFeatured').checked;
             const filterUnderperforming = document.getElementById('filterUnderperforming').checked;
@@ -456,7 +453,13 @@
             });
 
             filteredDataCache = filteredData;
-            renderChart(filteredData); 
+            
+            // Safety wrapper around chart building
+            try {
+                renderChart(filteredData); 
+            } catch (e) {
+                console.error("Failed to render chart:", e);
+            }
 
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
@@ -467,12 +470,10 @@
             }
 
             filteredData.forEach(job => {
-                // Determine Row Style based on health
                 let trClass = 'hover:bg-blue-50/50 dark:hover:bg-slate-700/50 transition-colors border-l-4 border-transparent';
                 let healthBadge = '';
                 
                 if (job.health === 'poor') {
-                    // Highlight underperforming rows aggressively
                     trClass = 'bg-red-50/40 hover:bg-red-50 dark:bg-red-900/10 dark:hover:bg-red-900/20 transition-colors border-l-4 border-red-500';
                     healthBadge = `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400">🔴 Critical</span>`;
                 } else if (job.health === 'new') {
@@ -486,4 +487,151 @@
                 let convColor = 'text-slate-600 dark:text-slate-300';
                 if (job.conversion >= 8) convColor = 'text-emerald-600 dark:text-emerald-400 font-bold';
                 else if (job.conversion > 2) convColor = 'text-blue-600 dark:text-blue-400 font-semibold';
-                else if (job.health === 'poor') convColor = 'text-red-600 dark:text-red-
+                else if (job.health === 'poor') convColor = 'text-red-600 dark:text-red-400 font-bold';
+
+                let badges = '';
+                if (job.expiringSoon) badges += `<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-medium bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 border border-orange-200 dark:border-orange-800/50 mr-1">${clockSvg} Expiring Soon</span>`;
+                if (job.isPinned) badges += `<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-medium bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border border-purple-200 dark:border-purple-800/50 mr-1">${pinSvg} Pinned</span>`;
+                if (job.isFeatured) badges += `<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800/50 mr-1">${starSvg} Featured</span>`;
+                
+                if (badges === '') badges = `<span class="text-slate-300 dark:text-slate-600">-</span>`;
+
+                const row = `
+                    <tr class="${trClass}">
+                        <td class="px-6 py-4">
+                            <div class="font-semibold text-slate-800 dark:text-slate-200 mb-1">${job.employer}</div>
+                            <a href="${job.url}" target="_blank" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium hover:underline block truncate max-w-xs" title="${job.title}">
+                                ${job.title}
+                            </a>
+                            <span class="text-xs text-slate-500 dark:text-slate-400 mt-1 block">${job.location}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-700 dark:text-slate-300 font-medium">${job.daysActive}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-600 dark:text-slate-400">${job.views}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center font-semibold text-slate-700 dark:text-slate-200">${job.totalApps}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center ${convColor}">${job.conversion}%</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center">${healthBadge}</td>
+                        <td class="px-6 py-4 text-left flex flex-wrap gap-1 mt-2">${badges}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function updateKPIs(data) {
+            const premiumJobs = data.filter(job => job.isPinned || job.isFeatured);
+            
+            const totalJobs = premiumJobs.length;
+            const totalViews = premiumJobs.reduce((sum, job) => sum + job.views, 0);
+            const totalApps = premiumJobs.reduce((sum, job) => sum + job.totalApps, 0);
+            const avgConv = totalViews > 0 ? ((totalApps / totalViews) * 100).toFixed(1) : 0;
+
+            document.getElementById('kpi-total-jobs').innerText = totalJobs;
+            document.getElementById('kpi-total-views').innerText = totalViews.toLocaleString();
+            document.getElementById('kpi-total-apps').innerText = totalApps.toLocaleString();
+            document.getElementById('kpi-avg-conv').innerText = avgConv + '%';
+        }
+
+        function renderChart(dataToChart) {
+            const periodStr = document.getElementById('chartPeriodSelector').value;
+            const groupStr = document.getElementById('chartGroupSelector').value;
+            const isDark = document.documentElement.classList.contains('dark');
+            
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const textColor = isDark ? 'rgba(203, 213, 225, 0.8)' : '#64748b';
+            
+            const now = new Date();
+            now.setHours(0,0,0,0);
+            
+            let cutoffDate = null;
+            if (periodStr !== 'all') {
+                cutoffDate = new Date(now);
+                cutoffDate.setDate(now.getDate() - parseInt(periodStr) + 1);
+            }
+
+            const dateCounts = {};
+
+            if (cutoffDate && groupStr !== 'month') {
+                for (let d = new Date(cutoffDate); d <= now; d.setDate(d.getDate() + 1)) {
+                    const dateStr = d.toISOString().split('T')[0];
+                    let key = dateStr;
+                    if (groupStr === 'week') key = getWeekStart(dateStr);
+                    dateCounts[key] = 0;
+                }
+            }
+
+            dataToChart.forEach(job => {
+                if (job.posted_at && job.posted_at !== 'Unknown') {
+                    const jobDate = new Date(job.posted_at);
+                    if (!isNaN(jobDate.getTime())) {
+                        if (!cutoffDate || jobDate >= cutoffDate) {
+                            let key = job.posted_at;
+                            if (groupStr === 'week') key = getWeekStart(job.posted_at);
+                            if (groupStr === 'month') key = getMonthStart(job.posted_at);
+                            
+                            dateCounts[key] = (dateCounts[key] || 0) + 1;
+                        }
+                    }
+                }
+            });
+
+            const sortedDates = Object.keys(dateCounts).sort();
+            const counts = sortedDates.map(date => dateCounts[date]);
+            
+            const displayDates = sortedDates.map(dateStr => {
+                const d = new Date(dateStr);
+                if (groupStr === 'month') {
+                    return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                } else if (groupStr === 'week') {
+                    return 'Wk of ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                } else {
+                    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                }
+            });
+
+            const ctx = document.getElementById('jobsChart').getContext('2d');
+            
+            if (chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: displayDates,
+                    datasets: [{
+                        label: 'Jobs Posted',
+                        data: counts,
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: 'rgb(37, 99, 235)',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0, color: textColor },
+                            grid: { color: gridColor }
+                        },
+                        x: {
+                            ticks: { color: textColor },
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.raw} Jobs`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
