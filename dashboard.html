@@ -1,30 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gippslander Jobs | Live Reporting</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-slate-50 text-gray-800 font-sans pb-12">
+<body class="bg-slate-50 dark:bg-slate-900 text-gray-800 dark:text-gray-200 font-sans pb-12 transition-colors duration-200">
 
     <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-slate-900">Gippslander Jobs Dashboard</h1>
-                <div class="text-sm text-slate-500 mt-2 flex items-center">
+                <h1 class="text-3xl font-bold text-slate-900 dark:text-white">Gippslander Jobs Dashboard</h1>
+                <div class="text-sm text-slate-500 dark:text-slate-400 mt-2 flex items-center">
                     <svg id="liveIndicator" class="w-3 h-3 text-emerald-500 animate-pulse mr-2" fill="currentColor" viewBox="0 0 24 24">
                         <circle cx="12" cy="12" r="10" />
                     </svg>
-                    Live reporting &nbsp;•&nbsp; Last updated: <span id="lastUpdated" class="font-medium ml-1 text-slate-700">Fetching...</span>
-                    &nbsp;•&nbsp; <span id="refreshStatusText" class="text-xs text-slate-400 ml-1">(Auto-refreshes every 60 mins)</span>
+                    Live reporting &nbsp;•&nbsp; Last updated: <span id="lastUpdated" class="font-medium ml-1 text-slate-700 dark:text-slate-300">Fetching...</span>
+                    &nbsp;•&nbsp; <span id="refreshStatusText" class="text-xs text-slate-400 dark:text-slate-500 ml-1">(Auto-refreshes every 60 mins)</span>
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <div class="flex items-center bg-white border border-gray-300 rounded-md shadow-sm px-2">
-                    <span class="text-xs text-gray-500 pl-2 pr-1">Auto-refresh:</span>
-                    <select id="refreshSelector" onchange="changeRefreshRate()" class="text-sm font-medium py-2 pl-1 pr-6 focus:outline-none text-slate-700 bg-transparent cursor-pointer">
+                <button onclick="toggleDarkMode()" class="p-2 rounded-md bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-600 dark:text-gray-300 shadow-sm hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
+                    <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    <svg class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                </button>
+                <div class="flex items-center bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-md shadow-sm px-2">
+                    <span class="text-xs text-gray-500 dark:text-gray-400 pl-2 pr-1">Auto-refresh:</span>
+                    <select id="refreshSelector" onchange="changeRefreshRate()" class="text-sm font-medium py-2 pl-1 pr-6 focus:outline-none text-slate-700 dark:text-slate-200 bg-transparent cursor-pointer">
                         <option value="off">Off</option>
                         <option value="60000">1 min</option>
                         <option value="300000">5 mins</option>
@@ -42,39 +51,39 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-6 border-t-4 border-t-blue-500">
-                <p class="text-sm font-medium text-slate-500">Premium Jobs (Active)</p>
-                <p class="text-3xl font-bold text-slate-900 mt-1" id="kpi-total-jobs">-</p>
+            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 p-6 border-t-4 border-t-blue-500">
+                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Premium Jobs (Active)</p>
+                <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1" id="kpi-total-jobs">-</p>
             </div>
-            <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-6 border-t-4 border-t-purple-500">
-                <p class="text-sm font-medium text-slate-500">Premium Views</p>
-                <p class="text-3xl font-bold text-slate-900 mt-1" id="kpi-total-views">-</p>
+            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 p-6 border-t-4 border-t-purple-500">
+                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Premium Views</p>
+                <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1" id="kpi-total-views">-</p>
             </div>
-            <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-6 border-t-4 border-t-emerald-500">
-                <p class="text-sm font-medium text-slate-500">Premium Apps</p>
-                <p class="text-3xl font-bold text-slate-900 mt-1" id="kpi-total-apps">-</p>
+            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 p-6 border-t-4 border-t-emerald-500">
+                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Premium Apps</p>
+                <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1" id="kpi-total-apps">-</p>
             </div>
-            <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-6 border-t-4 border-t-amber-500">
-                <p class="text-sm font-medium text-slate-500">Premium Conv. Rate</p>
-                <p class="text-3xl font-bold text-slate-900 mt-1" id="kpi-avg-conv">-</p>
+            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 p-6 border-t-4 border-t-amber-500">
+                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Premium Conv. Rate</p>
+                <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1" id="kpi-avg-conv">-</p>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-6 mb-8">
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 p-6 mb-8">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
-                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-3">
+                <h2 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-3">
                     Job Posts Volume <span class="text-sm font-normal text-slate-400 hidden sm:inline">(Filtered)</span>
-                    <button id="toggleChartBtn" onclick="toggleChart()" class="text-xs text-blue-600 hover:text-blue-800 font-medium cursor-pointer bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded border border-blue-200 transition-colors">
+                    <button id="toggleChartBtn" onclick="toggleChart()" class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium cursor-pointer bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded border border-blue-200 dark:border-blue-800 transition-colors">
                         Hide Chart
                     </button>
                 </h2>
                 <div class="flex gap-3">
-                    <select id="chartGroupSelector" onchange="changeChartSettings()" class="border border-gray-300 text-sm font-medium rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 bg-slate-50">
+                    <select id="chartGroupSelector" onchange="changeChartSettings()" class="border border-gray-300 dark:border-slate-600 text-sm font-medium rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-700">
                         <option value="day">By Day</option>
                         <option value="week">By Week</option>
                         <option value="month">By Month</option>
                     </select>
-                    <select id="chartPeriodSelector" onchange="changeChartSettings()" class="border border-gray-300 text-sm font-medium rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 bg-slate-50">
+                    <select id="chartPeriodSelector" onchange="changeChartSettings()" class="border border-gray-300 dark:border-slate-600 text-sm font-medium rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-700">
                         <option value="7">Last 7 Days</option>
                         <option value="30">Last 30 Days</option>
                         <option value="90">Last 90 Days</option>
@@ -87,7 +96,7 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-sm border border-slate-100 mb-6 p-4 flex flex-col gap-4">
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 mb-6 p-4 flex flex-col gap-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="relative w-full">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -95,70 +104,73 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                     </div>
-                    <input type="text" id="searchInput" placeholder="Search employer or job title..." class="w-full border border-gray-300 rounded-md pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="searchInput" placeholder="Search employer or job title..." class="w-full border border-gray-300 dark:border-slate-600 rounded-md pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500">
                 </div>
                 
                 <div class="w-full">
-                    <select id="locationFilter" onchange="changeLocationFilter()" class="w-full border border-gray-300 text-sm rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50">
+                    <select id="locationFilter" onchange="changeLocationFilter()" class="w-full border border-gray-300 dark:border-slate-600 text-sm rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
                         <option value="all">All Locations</option>
                     </select>
                 </div>
             </div>
 
-            <div class="flex flex-wrap items-center gap-3 pt-2 border-t border-gray-100 mt-1">
-                <span class="text-sm font-medium text-slate-500 mr-1">Filter by Tags:</span>
+            <div class="flex flex-wrap items-center gap-3 pt-2 border-t border-gray-100 dark:border-slate-700 mt-1">
+                <span class="text-sm font-medium text-slate-500 dark:text-slate-400 mr-1">Filter by Tags:</span>
                 
-                <label class="inline-flex items-center bg-slate-50 border border-gray-200 rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 cursor-pointer hover:bg-slate-100 transition-colors">
-                    <input type="checkbox" id="filterPinned" class="w-4 h-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500 mr-2" onchange="renderTable()">
+                <label class="inline-flex items-center bg-slate-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
+                    <input type="checkbox" id="filterPinned" class="w-4 h-4 text-purple-600 rounded border-gray-300 dark:border-slate-500 focus:ring-purple-500 dark:bg-slate-800 mr-2" onchange="renderTable()">
                     <svg class="w-4 h-4 mr-1 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C9.5 2 7.5 4 7.5 6.5c0 1.5.8 2.8 2 3.5V19l1.5 3 1.5-3v-9c1.2-.7 2-2 2-3.5C14.5 4 12.5 2 12 2z"/></svg>
                     Pinned
                 </label>
                 
-                <label class="inline-flex items-center bg-slate-50 border border-gray-200 rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 cursor-pointer hover:bg-slate-100 transition-colors">
-                    <input type="checkbox" id="filterFeatured" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2" onchange="renderTable()">
+                <label class="inline-flex items-center bg-slate-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
+                    <input type="checkbox" id="filterFeatured" class="w-4 h-4 text-blue-600 rounded border-gray-300 dark:border-slate-500 focus:ring-blue-500 dark:bg-slate-800 mr-2" onchange="renderTable()">
                     <svg class="w-4 h-4 mr-1 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
                     Featured
                 </label>
                 
-                <label class="inline-flex items-center bg-slate-50 border border-gray-200 rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 cursor-pointer hover:bg-slate-100 transition-colors">
-                    <input type="checkbox" id="filterAttention" class="w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500 mr-2" onchange="renderTable()">
-                    <svg class="w-4 h-4 mr-1 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                    Needs Attention
+                <label class="inline-flex items-center bg-slate-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
+                    <input type="checkbox" id="filterUnderperforming" class="w-4 h-4 text-red-600 rounded border-gray-300 dark:border-slate-500 focus:ring-red-500 dark:bg-slate-800 mr-2" onchange="renderTable()">
+                    <svg class="w-4 h-4 mr-1 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path></svg>
+                    Underperforming
                 </label>
 
-                <label class="inline-flex items-center bg-slate-50 border border-gray-200 rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 cursor-pointer hover:bg-slate-100 transition-colors">
-                    <input type="checkbox" id="filterExpiring" class="w-4 h-4 text-orange-600 rounded border-gray-300 focus:ring-orange-500 mr-2" onchange="renderTable()">
+                <label class="inline-flex items-center bg-slate-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-md px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
+                    <input type="checkbox" id="filterExpiring" class="w-4 h-4 text-orange-600 rounded border-gray-300 dark:border-slate-500 focus:ring-orange-500 dark:bg-slate-800 mr-2" onchange="renderTable()">
                     <svg class="w-4 h-4 mr-1 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     Expiring Soon
                 </label>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-sm border border-slate-100 overflow-hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-slate-50">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+                    <thead class="bg-slate-50 dark:bg-slate-900/50">
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Employer</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Job Title</th>
-                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider cursor-pointer group" onclick="sortTable('views')">
-                                <div class="flex items-center justify-center">Views <svg class="w-4 h-4 ml-1 text-gray-400 group-hover:text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path></svg></div>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Job Details</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer group" onclick="sortTable('daysActive')">
+                                <div class="flex items-center justify-center">Days Active <svg class="w-4 h-4 ml-1 text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path></svg></div>
                             </th>
-                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider cursor-pointer group" onclick="sortTable('totalApps')">
-                                <div class="flex items-center justify-center">Total Apps <svg class="w-4 h-4 ml-1 text-gray-400 group-hover:text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path></svg></div>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer group" onclick="sortTable('views')">
+                                <div class="flex items-center justify-center">Views <svg class="w-4 h-4 ml-1 text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path></svg></div>
                             </th>
-                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider cursor-pointer group" onclick="sortTable('conversion')">
-                                <div class="flex items-center justify-center">Conv. % <svg class="w-4 h-4 ml-1 text-gray-400 group-hover:text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path></svg></div>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer group" onclick="sortTable('totalApps')">
+                                <div class="flex items-center justify-center">Apps <svg class="w-4 h-4 ml-1 text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path></svg></div>
                             </th>
-                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Status Tags</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer group" onclick="sortTable('conversion')">
+                                <div class="flex items-center justify-center">Conv. % <svg class="w-4 h-4 ml-1 text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path></svg></div>
+                            </th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Health</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status Tags</th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody" class="bg-white divide-y divide-gray-100 text-sm">
+                    <tbody id="tableBody" class="bg-white dark:bg-slate-800 divide-y divide-gray-100 dark:divide-slate-700 text-sm">
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center">
+                            <td colspan="7" class="px-6 py-12 text-center">
                                 <div class="flex justify-center items-center flex-col">
                                     <svg class="animate-spin h-8 w-8 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                    <p class="text-slate-500">Fetching live job data...</p>
+                                    <p class="text-slate-500 dark:text-slate-400">Fetching live job data...</p>
                                 </div>
                             </td>
                         </tr>
@@ -183,14 +195,20 @@
         const LS_CHART_GROUP_KEY = 'gippslander_chart_group';
         const LS_LOCATION_KEY = 'gippslander_location_filter';
         const LS_CHART_VISIBLE_KEY = 'gippslander_chart_visible';
+        const LS_THEME_KEY = 'gippslander_theme';
 
         // SVGs for Badges
         const pinSvg = `<svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C9.5 2 7.5 4 7.5 6.5c0 1.5.8 2.8 2 3.5V19l1.5 3 1.5-3v-9c1.2-.7 2-2 2-3.5C14.5 4 12.5 2 12 2z"/></svg>`;
         const starSvg = `<svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`;
-        const alertSvg = `<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`;
+        const alertSvg = `<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path></svg>`;
         const clockSvg = `<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Theme setup
+            if (localStorage.getItem(LS_THEME_KEY) === 'dark' || (!localStorage.getItem(LS_THEME_KEY) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+
             // Load saved preferences
             const savedRefresh = localStorage.getItem(LS_REFRESH_KEY) || '3600000';
             const savedChartPeriod = localStorage.getItem(LS_CHART_PERIOD_KEY) || '30';
@@ -209,6 +227,13 @@
         document.getElementById('searchInput').addEventListener('input', renderTable);
 
         // -- User Setting Handlers --
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem(LS_THEME_KEY, isDark ? 'dark' : 'light');
+            if(chartInstance) renderChart(filteredDataCache); // Re-render to update chart grid colors
+        }
+
         function toggleChart() {
             isChartVisible = !isChartVisible;
             localStorage.setItem(LS_CHART_VISIBLE_KEY, isChartVisible);
@@ -302,10 +327,30 @@
                     const conversion = views > 0 ? ((totalApps / views) * 100).toFixed(1) : 0;
 
                     let daysLeft = 999;
-                    if (job.posted_at && job.job_expires_in_days) {
+                    let daysActive = 0;
+                    
+                    if (job.posted_at) {
                         const postedDate = new Date(job.posted_at);
-                        const expiryDate = new Date(postedDate.getTime() + (job.job_expires_in_days * 24 * 60 * 60 * 1000));
-                        daysLeft = (expiryDate - now) / (1000 * 60 * 60 * 24);
+                        // Calculate days active based on current time
+                        daysActive = Math.max(0, Math.floor((now - postedDate) / (1000 * 60 * 60 * 24)));
+                        
+                        if (job.job_expires_in_days) {
+                            const expiryDate = new Date(postedDate.getTime() + (job.job_expires_in_days * 24 * 60 * 60 * 1000));
+                            daysLeft = (expiryDate - now) / (1000 * 60 * 60 * 24);
+                        }
+                    }
+
+                    // Performance / Health Logic
+                    let healthScore = 'normal';
+                    let isUnderperforming = false;
+
+                    if (daysActive <= 3) {
+                        healthScore = 'new'; // Give new jobs a grace period
+                    } else if (totalApps === 0 || parseFloat(conversion) < 2.0) {
+                        healthScore = 'poor'; // Needs immediate attention
+                        isUnderperforming = true;
+                    } else if (parseFloat(conversion) >= 8.0 && totalApps > 2) {
+                        healthScore = 'excellent'; // Doing great
                     }
 
                     let simpleLocation = job.location ? job.location.split(',')[0].trim() : 'Unknown';
@@ -323,8 +368,10 @@
                         location: job.location,
                         simpleLocation: simpleLocation,
                         posted_at: job.posted_at ? new Date(job.posted_at).toISOString().split('T')[0] : 'Unknown',
+                        daysActive: daysActive,
                         daysLeft: daysLeft,
-                        needsAttention: (views > 50 && totalApps === 0),
+                        health: healthScore,
+                        isUnderperforming: isUnderperforming,
                         expiringSoon: (daysLeft < 7 && daysLeft >= 0)
                     };
                 });
@@ -354,7 +401,7 @@
             } catch (error) {
                 console.error("Error fetching data:", error);
                 const tbody = document.getElementById('tableBody');
-                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-red-500 font-medium">Failed to load data. Please check your connection or try refreshing.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-12 text-center text-red-500 font-medium">Failed to load data. Please check your connection or try refreshing.</td></tr>`;
             } finally {
                 if (isManualRefresh) setTimeout(() => refreshIcon.classList.remove('animate-spin'), 500);
             }
@@ -378,21 +425,20 @@
             // Get Checkbox States
             const filterPinned = document.getElementById('filterPinned').checked;
             const filterFeatured = document.getElementById('filterFeatured').checked;
-            const filterAttention = document.getElementById('filterAttention').checked;
+            const filterUnderperforming = document.getElementById('filterUnderperforming').checked;
             const filterExpiring = document.getElementById('filterExpiring').checked;
             
-            const hasStatusFilters = filterPinned || filterFeatured || filterAttention || filterExpiring;
+            const hasStatusFilters = filterPinned || filterFeatured || filterUnderperforming || filterExpiring;
 
             let filteredData = jobsData.filter(job => {
                 const matchesSearch = job.title.toLowerCase().includes(searchTerm) || job.employer.toLowerCase().includes(searchTerm);
                 
-                // Multi-select Status Filter Logic (OR logic)
                 let matchesStatus = true;
                 if (hasStatusFilters) {
                     matchesStatus = false; 
                     if (filterPinned && job.isPinned) matchesStatus = true;
                     if (filterFeatured && job.isFeatured) matchesStatus = true;
-                    if (filterAttention && job.needsAttention) matchesStatus = true;
+                    if (filterUnderperforming && job.isUnderperforming) matchesStatus = true;
                     if (filterExpiring && job.expiringSoon) matchesStatus = true;
                 }
 
@@ -416,148 +462,28 @@
             tbody.innerHTML = '';
 
             if (filteredData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-8 text-center text-gray-500">No jobs found matching your criteria.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No jobs found matching your criteria.</td></tr>`;
                 return;
             }
 
             filteredData.forEach(job => {
-                let convColor = 'text-slate-600';
-                if (job.conversion >= 10) convColor = 'text-emerald-600 font-bold';
-                else if (job.conversion > 0) convColor = 'text-blue-600 font-semibold';
-                else if (job.needsAttention) convColor = 'text-red-500 font-bold';
-
-                let badges = '';
-                if (job.needsAttention) badges += `<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-medium bg-red-50 text-red-700 mr-1 border border-red-200">${alertSvg} Needs Attention</span>`;
-                if (job.expiringSoon) badges += `<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-medium bg-orange-50 text-orange-700 mr-1 border border-orange-200">${clockSvg} Expiring Soon</span>`;
-                if (job.isPinned) badges += `<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-medium bg-purple-50 text-purple-700 mr-1 border border-purple-200">${pinSvg} Pinned</span>`;
-                if (job.isFeatured) badges += `<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-medium bg-blue-50 text-blue-700 border border-blue-200">${starSvg} Featured</span>`;
+                // Determine Row Style based on health
+                let trClass = 'hover:bg-blue-50/50 dark:hover:bg-slate-700/50 transition-colors border-l-4 border-transparent';
+                let healthBadge = '';
                 
-                if (badges === '') badges = `<span class="text-slate-300">-</span>`;
-
-                const row = `
-                    <tr class="hover:bg-blue-50/50 transition-colors">
-                        <td class="px-6 py-4 whitespace-nowrap font-semibold text-slate-800">${job.employer}</td>
-                        <td class="px-6 py-4">
-                            <a href="${job.url}" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium hover:underline block truncate max-w-xs" title="${job.title}">
-                                ${job.title}
-                            </a>
-                            <span class="text-xs text-slate-400 mt-1 block">${job.location}</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-center text-slate-600">${job.views}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-center font-semibold text-slate-700">${job.totalApps}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-center ${convColor}">${job.conversion}%</td>
-                        <td class="px-6 py-4 text-left flex flex-wrap gap-1">${badges}</td>
-                    </tr>
-                `;
-                tbody.innerHTML += row;
-            });
-        }
-
-        function updateKPIs(data) {
-            const premiumJobs = data.filter(job => job.isPinned || job.isFeatured);
-            
-            const totalJobs = premiumJobs.length;
-            const totalViews = premiumJobs.reduce((sum, job) => sum + job.views, 0);
-            const totalApps = premiumJobs.reduce((sum, job) => sum + job.totalApps, 0);
-            const avgConv = totalViews > 0 ? ((totalApps / totalViews) * 100).toFixed(1) : 0;
-
-            document.getElementById('kpi-total-jobs').innerText = totalJobs;
-            document.getElementById('kpi-total-views').innerText = totalViews.toLocaleString();
-            document.getElementById('kpi-total-apps').innerText = totalApps.toLocaleString();
-            document.getElementById('kpi-avg-conv').innerText = avgConv + '%';
-        }
-
-        // -- Dynamic Charting --
-        function renderChart(dataToChart) {
-            const periodStr = document.getElementById('chartPeriodSelector').value;
-            const groupStr = document.getElementById('chartGroupSelector').value;
-            
-            const now = new Date();
-            now.setHours(0,0,0,0);
-            
-            let cutoffDate = null;
-            if (periodStr !== 'all') {
-                cutoffDate = new Date(now);
-                cutoffDate.setDate(now.getDate() - parseInt(periodStr) + 1);
-            }
-
-            const dateCounts = {};
-
-            if (cutoffDate && groupStr !== 'month') {
-                for (let d = new Date(cutoffDate); d <= now; d.setDate(d.getDate() + 1)) {
-                    const dateStr = d.toISOString().split('T')[0];
-                    let key = dateStr;
-                    if (groupStr === 'week') key = getWeekStart(dateStr);
-                    dateCounts[key] = 0;
-                }
-            }
-
-            dataToChart.forEach(job => {
-                if (job.posted_at !== 'Unknown') {
-                    const jobDate = new Date(job.posted_at);
-                    if (!cutoffDate || jobDate >= cutoffDate) {
-                        let key = job.posted_at;
-                        if (groupStr === 'week') key = getWeekStart(job.posted_at);
-                        if (groupStr === 'month') key = getMonthStart(job.posted_at);
-                        
-                        dateCounts[key] = (dateCounts[key] || 0) + 1;
-                    }
-                }
-            });
-
-            const sortedDates = Object.keys(dateCounts).sort();
-            const counts = sortedDates.map(date => dateCounts[date]);
-            
-            const displayDates = sortedDates.map(dateStr => {
-                const d = new Date(dateStr);
-                if (groupStr === 'month') {
-                    return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-                } else if (groupStr === 'week') {
-                    return 'Wk of ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                if (job.health === 'poor') {
+                    // Highlight underperforming rows aggressively
+                    trClass = 'bg-red-50/40 hover:bg-red-50 dark:bg-red-900/10 dark:hover:bg-red-900/20 transition-colors border-l-4 border-red-500';
+                    healthBadge = `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400">🔴 Critical</span>`;
+                } else if (job.health === 'new') {
+                    healthBadge = `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">🔵 Eval (<3d)</span>`;
+                } else if (job.health === 'excellent') {
+                    healthBadge = `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">🟢 Great</span>`;
                 } else {
-                    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    healthBadge = `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-slate-500 dark:text-slate-400">🟡 Normal</span>`;
                 }
-            });
 
-            const ctx = document.getElementById('jobsChart').getContext('2d');
-            
-            if (chartInstance) chartInstance.destroy();
-
-            chartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: displayDates,
-                    datasets: [{
-                        label: 'Jobs Posted',
-                        data: counts,
-                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
-                        borderColor: 'rgb(37, 99, 235)',
-                        borderWidth: 1,
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { precision: 0 }
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return ` ${context.raw} Jobs`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-    </script>
-</body>
-</html>
+                let convColor = 'text-slate-600 dark:text-slate-300';
+                if (job.conversion >= 8) convColor = 'text-emerald-600 dark:text-emerald-400 font-bold';
+                else if (job.conversion > 2) convColor = 'text-blue-600 dark:text-blue-400 font-semibold';
+                else if (job.health === 'poor') convColor = 'text-red-600 dark:text-red-
