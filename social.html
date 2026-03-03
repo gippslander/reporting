@@ -27,17 +27,10 @@
 
         body { font-family: var(--font-main); background-color: var(--bg-color); margin: 0; padding: 40px 20px; color: var(--text-main); }
         
-        /* --- APP LAYOUT (Two-Column with Live Preview) --- */
-        .app-wrapper { 
-            display: flex; 
-            gap: 40px; 
-            max-width: 1400px; 
-            margin: 0 auto; 
-            align-items: flex-start; 
-            justify-content: center;
-        }
+        /* --- APP LAYOUT --- */
+        .app-wrapper { display: flex; gap: 40px; max-width: 1400px; margin: 0 auto; align-items: flex-start; justify-content: center; }
 
-        /* --- DASHBOARD UI (Left Column) --- */
+        /* --- DASHBOARD UI --- */
         .dashboard { flex: 1; min-width: 500px; max-width: 800px; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         
         .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
@@ -59,7 +52,6 @@
         .job-list { display: flex; flex-direction: column; gap: 10px; height: 500px; overflow-y: auto; border: 1px solid #eee; padding: 15px; border-radius: 8px; background: #fafafa; }
         .job-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); border-left: 4px solid #ddd; transition: transform 0.1s;}
         .job-item:hover { transform: translateX(2px); border-color: #aaa;}
-        
         .job-item.selected-item { border-left: 4px solid var(--primary-color); background: #f0fdf4; border-top: 1px solid #c6f6d5; border-right: 1px solid #c6f6d5; border-bottom: 1px solid #c6f6d5;}
         .job-item input { width: 22px; height: 22px; cursor: pointer; accent-color: var(--primary-color);}
         .job-item input:disabled { cursor: not-allowed; }
@@ -80,92 +72,34 @@
         .btn-clear { background: #e53935; font-size: 1.1rem; padding: 15px 25px; display: none; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;}
         .btn-clear:hover { background: #c62828; }
 
-        /* --- PREVIEW UI (Right Column) --- */
-        .preview-container {
-            position: sticky;
-            top: 40px;
-            width: 486px; /* 1080px * 0.45 scale */
-            height: 486px;
-            border-radius: 15px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-            overflow: hidden; /* Clips the scaled square perfectly */
-            background: #e9ecef;
-            flex-shrink: 0;
-            border: 4px solid white;
-        }
+        /* --- GENERATED TEXT BOX UI --- */
+        .social-text-box { display: none; background: #e8f5e9; border: 1px solid #c8e6c9; padding: 20px; border-radius: 12px; margin-top: 25px; }
+        .social-text-box h4 { margin: 0 0 15px 0; color: #2e7d32; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+        .social-text-box p { margin: 10px 0 5px 0; font-size: 0.9rem; font-weight: 700; color: #1a1a1a; }
+        .social-text-box textarea { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-family: inherit; font-size: 0.9rem; resize: vertical; outline: none; background: white; color: #333; line-height: 1.5; }
+        .social-text-box textarea:focus { border-color: var(--primary-color); }
 
-        #social-wrapper { 
-            transform: scale(0.45);
-            transform-origin: top left;
-            width: 1080px;
-            height: 1080px;
-        }
+        /* --- PREVIEW UI --- */
+        .preview-container { position: sticky; top: 40px; width: 486px; height: 486px; border-radius: 15px; box-shadow: 0 15px 40px rgba(0,0,0,0.1); overflow: hidden; background: #e9ecef; flex-shrink: 0; border: 4px solid white; }
+        #social-wrapper { transform: scale(0.45); transform-origin: top left; width: 1080px; height: 1080px; }
         
-        /* --- 1080x1080 SOCIAL TILE TEMPLATE --- */
-        #social-template { 
-            width: 1080px; 
-            height: 1080px; 
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 50px 60px; 
-            box-sizing: border-box; 
-            color: #1a1a1a;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-        
+        #social-template { width: 1080px; height: 1080px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 50px 60px; box-sizing: border-box; color: #1a1a1a; display: flex; flex-direction: column; position: relative; }
         #social-template * { position: relative; z-index: 2; }
-        
-        .watermark {
-            position: absolute !important;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 800px;
-            height: 800px;
-            opacity: 0.03;
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: contain;
-            pointer-events: none;
-            z-index: 1 !important;
-        }
+        .watermark { position: absolute !important; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px; height: 800px; opacity: 0.03; background-repeat: no-repeat; background-position: center; background-size: contain; pointer-events: none; z-index: 1 !important; }
 
         .social-header { text-align: center; margin-bottom: 25px; }
         .social-header img { height: 70px; object-fit: contain; margin-bottom: 8px; }
         .social-header h1 { margin: 0; font-size: 52px; font-weight: 800; color: #1a1a1a; letter-spacing: -1px; line-height: 1.1; }
         .social-header p { font-size: 20px; color: var(--primary-color); font-weight: 800; margin: 8px 0 0 0; text-transform: uppercase; letter-spacing: 2px; }
 
-        .social-grid {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            gap: 16px;
-            flex-grow: 1;
-        }
-
-        .social-card {
-            background: #fff;
-            border-radius: 16px;
-            padding: 18px 30px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
-            border-left: 10px solid #cbd5e1; 
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+        .social-grid { display: flex; flex-direction: column; justify-content: space-between; gap: 16px; flex-grow: 1; }
+        .social-card { background: #fff; border-radius: 16px; padding: 18px 30px; box-shadow: 0 8px 20px rgba(0,0,0,0.04); border-left: 10px solid #cbd5e1; display: flex; flex-direction: column; justify-content: center; }
 
         .social-category-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .social-category { font-size: 15px; color: var(--primary-color); font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; line-height: 1.2;}
         .social-badges { display: flex; gap: 10px; }
         
-        .soc-badge { 
-            display: inline-flex; align-items: center; gap: 6px; 
-            font-size: 14px; font-weight: 900; padding: 6px 14px; 
-            border-radius: 999px; text-transform: uppercase; 
-            letter-spacing: 0.5px; line-height: 1;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
+        .soc-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 900; padding: 6px 14px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .soc-badge svg { width: 16px !important; height: 16px !important; stroke-width: 2.5px; }
         
         .social-title { font-size: 34px; font-weight: 800; margin: 0 0 8px 0; line-height: 1.2; color: #000; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -174,28 +108,11 @@
         .social-location { display: flex; align-items: center; gap: 6px; color: #888; }
         .social-location svg { width: 20px !important; height: 20px !important; } 
 
-        .social-footer {
-            text-align: center;
-            margin-top: 25px;
-            font-size: 26px;
-            font-weight: 700;
-            color: #444;
-            background: #fff;
-            padding: 16px;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.03);
-        }
+        .social-footer { text-align: center; margin-top: 25px; font-size: 26px; font-weight: 700; color: #444; background: #fff; padding: 16px; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.03); }
         .social-footer span { color: var(--primary-color); }
         
-        @media (max-width: 1100px) {
-            .app-wrapper { flex-direction: column; align-items: center; }
-            .preview-container { position: static; }
-        }
-        @media (max-width: 600px) {
-            .dashboard { min-width: 100%; width: 100%; padding: 20px; }
-            .preview-container { width: 324px; height: 324px; }
-            #social-wrapper { transform: scale(0.3); } 
-        }
+        @media (max-width: 1100px) { .app-wrapper { flex-direction: column; align-items: center; } .preview-container { position: static; } }
+        @media (max-width: 600px) { .dashboard { min-width: 100%; width: 100%; padding: 20px; } .preview-container { width: 324px; height: 324px; } #social-wrapper { transform: scale(0.3); } }
     </style>
 </head>
 <body>
@@ -232,6 +149,19 @@
             <div class="action-row">
                 <button class="btn-generate" id="generate-btn" onclick="generateSocialTile()" disabled>Download Social Tile (0/4 Selected)</button>
                 <button class="btn-clear" id="clear-btn" onclick="clearSelection()">Clear Selection</button>
+            </div>
+
+            <div class="social-text-box" id="social-text-container">
+                <h4>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                    Ready to Post: Copy & Paste Text
+                </h4>
+                
+                <p>1. Main Facebook Post:</p>
+                <textarea id="fb-caption" rows="5" readonly></textarea>
+                
+                <p>2. Put this in the First Comment:</p>
+                <textarea id="fb-comment" rows="6" readonly></textarea>
             </div>
         </div>
         
@@ -479,24 +409,22 @@
             clearBtn.style.display = count > 0 ? 'block' : 'none';
         }
 
-        // --- HELPER: GET FORMATTED DATE ---
         function getFormattedDate() {
             const options = { weekday: 'long', day: 'numeric', month: 'long' };
-            // Returns something like "Tuesday, 3 March" formatted to local standard
             return new Date().toLocaleDateString('en-AU', options).toUpperCase();
         }
 
-        // --- THE LIVE PREVIEW SYSTEM ---
+        // --- THE LIVE PREVIEW & COPY TEXT SYSTEM ---
         function updateLivePreview() {
             const selectedJobs = Array.from(selectedJobsMap.values());
             const grid = document.getElementById('social-grid-container');
+            const textContainer = document.getElementById('social-text-container');
             
             const customTitle = document.getElementById('tile-title-input').value.trim() || 'The Daily Drop';
             document.getElementById('social-title-text').innerText = customTitle;
             
             const uniqueTowns = [...new Set(selectedJobs.map(job => (job.location || '').replace(/,\s*Victoria,\s*Australia/i, '').trim()))].filter(Boolean);
             
-            // Generate the dynamic Date + Locations string
             const todayDateStr = getFormattedDate();
             let subtextLine = 'Select jobs to build tile';
             if (selectedJobs.length > 0) {
@@ -504,11 +432,16 @@
             }
             document.getElementById('social-locations-text').innerText = subtextLine;
 
+            // Empty state handler
+            if (selectedJobs.length < 4) {
+                textContainer.style.display = 'none'; // Hide text generator until full
+            }
             if (selectedJobs.length === 0) {
                 grid.innerHTML = `<div style="text-align:center; padding-top: 150px; color: #aaa; font-size: 30px; font-weight: 600;">Select 4 jobs to generate preview</div>`;
                 return;
             }
 
+            // Build Tile Image HTML
             grid.innerHTML = selectedJobs.map((job) => {
                 const category = job.category?.name || 'General';
                 const employer = job.employer?.name || 'Local Employer';
@@ -539,6 +472,24 @@
                     </div>
                 `;
             }).join('');
+            
+            // Build Copy & Paste Text if 4 jobs selected
+            if (selectedJobs.length === 4) {
+                textContainer.style.display = 'block';
+                
+                // Set the Main Post Caption
+                const captionText = `🚨 **${customTitle} has landed!** 🚨\n\nWe’ve rounded up 4 fresh opportunities across Gippsland today. Whether you’re looking to step up, scale back, or completely change lanes, your next career move could be right here.\n\n👇 See something you like? Tag a mate who needs to see this, and check the comments for direct links to apply!\n\n🔗 gippslander.com.au/jobs`;
+                document.getElementById('fb-caption').value = captionText;
+                
+                // Set the Comments List
+                let commentText = `Here are the direct links to apply for today's roles:\n\n`;
+                selectedJobs.forEach(job => {
+                    const smartTitle = toSmartTitleCase(job.title);
+                    const employer = job.employer?.name || 'Local Employer';
+                    commentText += `🔗 ${smartTitle} at ${employer}:\ngippslander.au/${job.id}\n\n`;
+                });
+                document.getElementById('fb-comment').value = commentText.trim();
+            }
         }
 
         // --- FINAL EXPORT ---
