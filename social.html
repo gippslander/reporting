@@ -150,7 +150,7 @@
             border-radius: 16px;
             padding: 18px 30px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.04);
-            border-left: 10px solid var(--primary-color); 
+            border-left: 10px solid #cbd5e1; /* Default to modern grey */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -488,16 +488,13 @@
         }
 
         // --- THE LIVE PREVIEW SYSTEM ---
-        // This function builds the DOM without triggering a download
         function updateLivePreview() {
             const selectedJobs = Array.from(selectedJobsMap.values());
             const grid = document.getElementById('social-grid-container');
             
-            // Bind Title Input
             const customTitle = document.getElementById('tile-title-input').value.trim() || 'Jobs of the Week';
             document.getElementById('social-title-text').innerText = customTitle;
             
-            // Build unique towns string
             const uniqueTowns = [...new Set(selectedJobs.map(job => (job.location || '').replace(/,\s*Victoria,\s*Australia/i, '').trim()))].filter(Boolean);
             document.getElementById('social-locations-text').innerText = uniqueTowns.length > 0 ? uniqueTowns.join(' • ') : 'Select jobs to build tile';
 
@@ -506,7 +503,6 @@
                 return;
             }
 
-            // Build HTML Cards
             grid.innerHTML = selectedJobs.map((job) => {
                 const category = job.category?.name || 'General';
                 const employer = job.employer?.name || 'Local Employer';
@@ -520,7 +516,8 @@
                 const dynBadge = getJobBadgeData(job);
                 if (dynBadge) socialBadgesHTML += `<span class="soc-badge" style="background: var(--badge-${dynBadge.type}-bg); color: var(--badge-${dynBadge.type}-txt);">${dynBadge.svg} ${dynBadge.text}</span>`;
                 
-                const leftBorderColor = isFeat ? '#f57c00' : 'var(--primary-color)';
+                // Grey border for standard, Green for featured
+                const leftBorderColor = isFeat ? 'var(--primary-color)' : '#cbd5e1';
 
                 return `
                     <div class="social-card" style="border-left-color: ${leftBorderColor};">
