@@ -17,18 +17,15 @@
             --text-main: #1a1a1a;
             --bg-color: #f4f7f6;
             --font-main: 'Poppins', sans-serif;
-            
-            /* Modern Pastel Badge Colors */
-            --badge-feat-bg: #fef08a; --badge-feat-txt: #a16207;
-            --badge-new-bg: #e0f2fe; --badge-new-txt: #0369a1;
-            --badge-closing-bg: #fee2e2; --badge-closing-txt: #b91c1c;
-            --badge-pop-bg: #f3e8ff; --badge-pop-txt: #7e22ce;
         }
 
         body { font-family: var(--font-main); background-color: var(--bg-color); margin: 0; padding: 40px 20px; color: var(--text-main); }
         
+        /* --- APP LAYOUT --- */
+        .app-wrapper { display: flex; gap: 40px; max-width: 1400px; margin: 0 auto; align-items: flex-start; justify-content: center; }
+
         /* --- DASHBOARD UI --- */
-        .dashboard { max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .dashboard { flex: 1; min-width: 500px; max-width: 800px; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         
         .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
         .dash-header img { height: 40px; object-fit: contain; }
@@ -42,223 +39,124 @@
         button:hover { opacity: 0.9; }
         button:disabled { background: #ccc !important; cursor: not-allowed; opacity: 1; }
         
-        /* --- FILTER BAR --- */
-        .filter-bar { display: none; align-items: center; gap: 20px; background: #f8f9fa; padding: 15px 20px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
+        .filter-bar { display: none; align-items: center; gap: 20px; background: #f8f9fa; padding: 15px 20px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; flex-wrap: wrap;}
         .filter-bar label { display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; user-select: none; }
         .filter-bar input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary-color); }
 
-        .job-list { display: flex; flex-direction: column; gap: 10px; max-height: 500px; overflow-y: auto; border: 1px solid #eee; padding: 15px; border-radius: 8px; background: #fafafa; }
+        .job-list { display: flex; flex-direction: column; gap: 10px; height: 500px; overflow-y: auto; border: 1px solid #eee; padding: 15px; border-radius: 8px; background: #fafafa; }
         .job-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); border-left: 4px solid #ddd; transition: transform 0.1s;}
         .job-item:hover { transform: translateX(2px); border-color: #aaa;}
-        
         .job-item.selected-item { border-left: 4px solid var(--primary-color); background: #f0fdf4; border-top: 1px solid #c6f6d5; border-right: 1px solid #c6f6d5; border-bottom: 1px solid #c6f6d5;}
         .job-item input { width: 22px; height: 22px; cursor: pointer; accent-color: var(--primary-color);}
         .job-item input:disabled { cursor: not-allowed; }
-        .job-item.disabled-item { opacity: 0.5; cursor: not-allowed; }
+        .job-item.disabled-item { opacity: 0.5; cursor: not-allowed; filter: grayscale(100%); }
         .job-item.disabled-item label { cursor: not-allowed; }
         
         .job-info { flex: 1; display: flex; flex-direction: column; justify-content: center;}
         .job-info h3 { margin: 0 0 6px 0; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; flex-wrap: wrap; gap: 8px;}
         .job-info p { margin: 0; font-size: 0.9rem; color: #666; display: flex; align-items: center; }
-        
         .job-info svg { width: 16px !important; height: 16px !important; flex-shrink: 0; }
         
-        .badge-small { 
-            display: inline-flex; align-items: center; gap: 4px;
-            font-size: 0.65rem; padding: 4px 8px; border-radius: 6px; 
-            font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
-            line-height: 1;
-        }
+        .badge-small { display: inline-flex; align-items: center; gap: 4px; font-size: 0.65rem; padding: 4px 8px; border-radius: 6px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1; }
         .badge-small svg { width: 10px !important; height: 10px !important; }
 
-        /* --- ACTION CONTROLS --- */
         .action-row { display: flex; gap: 15px; margin-top: 25px; }
         .btn-generate { flex: 1; background: #ccc; font-size: 1.2rem; padding: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);}
         .btn-generate:hover:not(:disabled) { box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);}
         .btn-clear { background: #e53935; font-size: 1.1rem; padding: 15px 25px; display: none; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;}
         .btn-clear:hover { background: #c62828; }
 
-        /* --- HIDDEN SOCIAL TILE TEMPLATE --- */
-        #social-wrapper { position: absolute; left: -9999px; top: 0; }
-        
-        #social-template { 
-            width: 1080px; 
-            height: 1080px; 
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 50px 60px; 
-            box-sizing: border-box; 
-            color: #1a1a1a;
-            display: flex;
-            flex-direction: column;
-        }
+        /* --- GENERATED TEXT BOX UI --- */
+        .social-text-box { display: none; background: #e8f5e9; border: 1px solid #c8e6c9; padding: 20px; border-radius: 12px; margin-top: 25px; }
+        .social-text-box h4 { margin: 0 0 15px 0; color: #2e7d32; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+        .social-text-box p { margin: 10px 0 5px 0; font-size: 0.9rem; font-weight: 700; color: #1a1a1a; }
+        .social-text-box textarea { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-family: inherit; font-size: 0.9rem; resize: vertical; outline: none; background: white; color: #333; line-height: 1.5; }
+        .social-text-box textarea:focus { border-color: var(--primary-color); }
 
-        .social-header { text-align: center; margin-bottom: 25px; }
-        .social-header img { height: 70px; object-fit: contain; margin-bottom: 8px; }
-        .social-header h1 { margin: 0; font-size: 52px; font-weight: 800; color: #1a1a1a; letter-spacing: -1px; line-height: 1.1; }
-        .social-header p { font-size: 20px; color: var(--primary-color); font-weight: 800; margin: 8px 0 0 0; text-transform: uppercase; letter-spacing: 2px; }
+        /* --- VISUAL PREVIEW UI --- */
+        .preview-container { position: sticky; top: 40px; width: 486px; height: 607px; border-radius: 15px; box-shadow: 0 15px 40px rgba(0,0,0,0.1); overflow: hidden; background: #fff; flex-shrink: 0; border: 4px solid white; display: flex; justify-content: center; }
+        #preview-wrapper { transform: scale(0.45); transform-origin: top left; width: 1080px; height: 1350px; position: absolute; top: 0; left: 0; }
+        
+        /* --- EXPORT TEMPLATE --- */
+        #export-template { position: absolute; top: -9999px; left: -9999px; z-index: -1000; width: 1080px; height: 1350px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 50px 60px; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; font-family: 'Poppins', sans-serif;}
+        
+        .empty-state { text-align:center; color: #aaa; font-size: 1.2rem; font-weight: 600; width: 100%; margin-top: 500px;}
 
-        /* HORIZONTAL LIST LAYOUT */
-        .social-grid {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            gap: 16px;
-            flex-grow: 1;
-        }
-
-        .social-card {
-            background: #fff;
-            border-radius: 16px;
-            padding: 18px 30px; /* Tightened top/bottom slightly to fit bigger text */
-            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
-            border-left: 10px solid var(--primary-color); 
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .social-category-row { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 8px; 
-        }
-        
-        .social-category { 
-            font-size: 15px; 
-            color: var(--primary-color); 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            letter-spacing: 1.2px; 
-            line-height: 1.2;
-        }
-        
-        .social-badges { 
-            display: flex; 
-            gap: 10px; 
-        }
-        
-        /* BIGGER, BOLDER BADGES */
-        .soc-badge { 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 6px; 
-            font-size: 14px; /* Increased */
-            font-weight: 900; /* Max boldness */
-            padding: 6px 14px; /* Slightly thicker */
-            border-radius: 999px; 
-            text-transform: uppercase; 
-            letter-spacing: 0.5px; 
-            line-height: 1;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Subtle lift */
-        }
-        
-        .soc-badge svg { width: 16px !important; height: 16px !important; stroke-width: 2.5px; }
-        
-        /* BIGGER JOB TITLE */
-        .social-title { 
-            font-size: 34px; /* Increased */
-            font-weight: 800; 
-            margin: 0 0 8px 0; 
-            line-height: 1.2; 
-            color: #000; /* Maximum contrast */
-            display: -webkit-box; 
-            -webkit-line-clamp: 2; 
-            -webkit-box-orient: vertical; 
-            overflow: hidden; 
-        }
-        
-        /* BIGGER COMPANY & LOCATION ROW */
-        .social-bottom-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 20px; /* Increased from 18px */
-            font-weight: 600;
-            color: #666;
-        }
-
-        .social-company { color: #555; }
-        
-        .social-location { display: flex; align-items: center; gap: 6px; color: #888; }
-        .social-location svg { width: 20px !important; height: 20px !important; } 
-
-        .social-footer {
-            text-align: center;
-            margin-top: 25px;
-            font-size: 26px;
-            font-weight: 700;
-            color: #444;
-            background: #fff;
-            padding: 16px;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.03);
-        }
-        .social-footer span { color: var(--primary-color); }
+        @media (max-width: 1100px) { .app-wrapper { flex-direction: column; align-items: center; } .preview-container { position: static; } }
+        @media (max-width: 600px) { .dashboard { min-width: 100%; width: 100%; padding: 20px; } .preview-container { width: 324px; height: 405px; } #preview-wrapper { transform: scale(0.3); } }
     </style>
 </head>
 <body>
 
-    <div class="dashboard">
-        <div class="dash-header">
-            <img src="" id="main-dash-logo" alt="Gippslander Logo">
-            <span id="status-text">System Ready</span>
-        </div>
+    <div class="app-wrapper">
+        <div class="dashboard">
+            <div class="dash-header">
+                <img src="" id="main-dash-logo" alt="Gippslander Logo">
+                <span id="status-text">3-Job Insights Board Ready</span>
+            </div>
 
-        <div class="controls">
-            <input type="text" id="town-input" placeholder="Search by Region or Town (Leave blank for all jobs)">
-            <button onclick="fetchJobs()" id="fetch-btn">Search Jobs</button>
-        </div>
-        
-        <div class="controls">
-            <input type="text" id="tile-title-input" placeholder="Tile Header (e.g., Jobs of the Week)" value="Jobs of the Week">
-        </div>
-
-        <div class="filter-bar" id="filters-container">
-            <select id="location-filter" onchange="applyFilters()">
-                <option value="all">All Searched Locations</option>
-            </select>
-            <label>
-                <input type="checkbox" id="featured-filter" onchange="applyFilters()"> Featured / Premium Only
-            </label>
-        </div>
-
-        <div class="job-list" id="job-list-container">
-            <div style="padding: 30px; text-align: center; color: #888; font-size: 1.1rem;">Loading jobs...</div>
-        </div>
-
-        <div class="action-row">
-            <button class="btn-generate" id="generate-btn" onclick="generateSocialTile()" disabled>Download Social Tile (0/4 Selected)</button>
-            <button class="btn-clear" id="clear-btn" onclick="clearSelection()">Clear Selection</button>
-        </div>
-    </div>
-
-    <div id="social-wrapper">
-        <div id="social-template">
-            <div class="social-header">
-                <img id="social-safe-logo" src="" alt="Gippslander Logo">
-                <h1 id="social-title-text">Jobs of the Week</h1>
-                <p id="social-locations-text">South Gippsland</p>
+            <div class="controls">
+                <input type="text" id="town-input" placeholder="Search by Region or Town (Leave blank for all jobs)">
+                <button onclick="fetchJobs()" id="fetch-btn">Search Jobs</button>
             </div>
             
-            <div class="social-grid" id="social-grid-container">
-                </div>
+            <div class="controls">
+                <input type="text" id="tile-title-input" placeholder="Tile Header (e.g., The Daily Drop)" value="The Daily Drop" oninput="updateLivePreview()">
+            </div>
 
-            <div class="social-footer">
-                Apply now at <span>gippslander.com.au/jobs</span>
+            <div class="filter-bar" id="filters-container">
+                <select id="location-filter" onchange="applyFilters()">
+                    <option value="all">All Searched Locations</option>
+                </select>
+                <label>
+                    <input type="checkbox" id="pinned-filter" onchange="applyFilters()" checked> Pinned Jobs Only
+                </label>
+                <label>
+                    <input type="checkbox" id="featured-filter" onchange="applyFilters()"> Featured Only
+                </label>
+            </div>
+
+            <div class="job-list" id="job-list-container">
+                <div style="padding: 30px; text-align: center; color: #888; font-size: 1.1rem;">Loading jobs...</div>
+            </div>
+
+            <div class="action-row">
+                <button class="btn-generate" id="generate-btn" onclick="generateSocialTile()" disabled>Download Image (0/3 Selected)</button>
+                <button class="btn-clear" id="clear-btn" onclick="clearSelection()">Clear Selection</button>
+            </div>
+
+            <div class="social-text-box" id="social-text-container">
+                <h4>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                    Ready to Post: Copy & Paste Text
+                </h4>
+                <p>Main Facebook Post:</p>
+                <textarea id="fb-caption" rows="5" readonly></textarea>
+                <p>Put this in the First Comment:</p>
+                <textarea id="fb-comment" rows="5" readonly></textarea>
+            </div>
+        </div>
+        
+        <div class="preview-container">
+            <div id="preview-wrapper">
+                <div id="preview-render-area" style="width: 1080px; height: 1350px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 50px 60px; box-sizing: border-box; display: flex; flex-direction: column; position: relative;">
+                    <div class="empty-state" style="font-size: 30px;">Select 3 jobs to generate</div>
+                </div>
             </div>
         </div>
     </div>
+
+    <div id="export-template"></div>
 
     <script>
         const BASE_API_URL = 'https://gippsland-jobs-proxy.vercel.app/api/jobs?towns=';
         const LOGO_URL = 'https://raw.githubusercontent.com/gippslander/assets/main/gippslander_com_au_logo.png';
         
-        const PIN_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`;
-        const STAR_SVG = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
-        const ZAP_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`;
-        const CLOCK_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
-        const TREND_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+        const PIN_SVG = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`;
+        const VERIFIED_SVG = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>`;
+        const ZAP_SVG = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`;
+        const CLOCK_SVG = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+        const FIRE_SVG = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>`;
 
         let fetchedJobs = []; 
         let currentFilteredJobs = []; 
@@ -275,12 +173,9 @@
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0);
                 cachedLogoBase64 = canvas.toDataURL('image/png');
-                
                 document.getElementById('main-dash-logo').src = cachedLogoBase64;
-                document.getElementById('social-safe-logo').src = cachedLogoBase64;
             };
             img.src = LOGO_URL;
-
             fetchJobs();
         };
 
@@ -288,6 +183,7 @@
             selectedJobsMap.clear();
             applyFilters();
             updateButtonState();
+            updateLivePreview(); 
         }
 
         async function fetchJobs() {
@@ -304,7 +200,6 @@
             try {
                 const response = await fetch(BASE_API_URL + encodeURIComponent(towns));
                 const data = await response.json();
-                
                 fetchedJobs = data.filter(j => j.title && j.final_status === 'active');
                 
                 if (fetchedJobs.length === 0) {
@@ -328,66 +223,86 @@
         function populateFilters() {
             const drop = document.getElementById('location-filter');
             drop.innerHTML = '<option value="all">All Searched Locations</option>';
-
             const locations = [...new Set(fetchedJobs.map(j => (j.location || '').replace(/,\s*Victoria,\s*Australia/i, '').trim()).filter(Boolean))];
-            locations.sort().forEach(loc => {
-                drop.innerHTML += `<option value="${loc}">${loc}</option>`;
-            });
-
+            locations.sort().forEach(loc => drop.innerHTML += `<option value="${loc}">${loc}</option>`);
             document.getElementById('filters-container').style.display = 'flex';
         }
 
         function applyFilters() {
             const locFilter = document.getElementById('location-filter').value;
             const featFilter = document.getElementById('featured-filter').checked;
+            const pinnedFilter = document.getElementById('pinned-filter').checked;
 
             currentFilteredJobs = fetchedJobs.filter(job => {
                 const loc = (job.location || '').replace(/,\s*Victoria,\s*Australia/i, '').trim();
-                const isFeatured = job.featured || job.pin_to_top;
-
+                
                 if (locFilter !== 'all' && loc !== locFilter) return false;
-                if (featFilter && !isFeatured) return false;
+                if (featFilter && !job.featured) return false;
+                if (pinnedFilter && !job.pin_to_top) return false;
+                
                 return true;
             });
 
             renderChecklist(currentFilteredJobs);
         }
 
-        function getJobBadgeData(job) {
+        function getJobBadges(job) {
+            let badges = [];
+
+            if (job.featured || job.pin_to_top) {
+                badges.push({ text: 'Verified', svg: VERIFIED_SVG, bg: '#fef08a', color: '#a16207', textColor: '#d97706' });
+            }
+
             const postedDate = new Date(job.posted_at || job.created_at);
             const daysOld = Math.floor((new Date() - postedDate) / (1000 * 60 * 60 * 24));
-            const appCount = job.applications_count || job.applications || job.applied || 0;
             
-            if (daysOld < 3) return { type: 'new', text: 'Just Listed', svg: ZAP_SVG };
-            if (daysOld > 20) return { type: 'closing', text: 'Closing Soon', svg: CLOCK_SVG };
-            if (appCount >= 5) return { type: 'pop', text: 'Popular', svg: TREND_SVG };
-            
-            return null; 
+            let daysLeft = 30;
+            if (job.expires_at) {
+                daysLeft = Math.floor((new Date(job.expires_at) - new Date()) / (1000 * 60 * 60 * 24));
+            } else {
+                daysLeft = (job.job_expires_in_days || 30) - daysOld;
+            }
+
+            if (daysOld <= 5) {
+                badges.push({ text: 'Just Listed', svg: ZAP_SVG, bg: '#e0f2fe', color: '#0369a1', textColor: '#0284c7' });
+            }
+
+            if (daysLeft <= 10 && daysLeft >= 0) {
+                badges.push({ text: 'Closing Soon', svg: CLOCK_SVG, bg: '#fee2e2', color: '#b91c1c', textColor: '#dc2626' });
+            }
+
+            const views = job.views || job.applications_count || job.applied || 0;
+            if (views > 20) {
+                badges.push({ text: 'Popular', svg: FIRE_SVG, bg: '#ffedd5', color: '#c2410c', textColor: '#ea580c' });
+            }
+
+            return badges.slice(0, 3); 
         }
 
-        // Title Case Helper Function
-        function toTitleCase(str) {
-            return str.toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
+        function toSmartTitleCase(str) {
+            const smallWords = /^(a|an|and|as|at|but|by|en|for|if|in|nor|of|on|or|per|the|to|v.?|vs.?|via)$/i;
+            return str.replace(/\w\S*/g, function(txt, offset) {
+                if (offset !== 0 && smallWords.test(txt)) return txt.toLowerCase();
+                return txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase();
+            });
+        }
+
+        function getFormattedDate() {
+            const options = { weekday: 'long', day: 'numeric', month: 'long' };
+            return new Date().toLocaleDateString('en-AU', options).toUpperCase();
         }
 
         function buildJobRow(job, isSelected, maxReached) {
             const employer = job.employer?.name || 'Local Employer';
             const location = (job.location || '').replace(/,\s*Victoria,\s*Australia/i, '');
-            const isFeatured = job.featured || job.pin_to_top;
-            
-            // Generate Title Case for dashboard list
-            const titleCaseTitle = toTitleCase(job.title);
+            const smartTitle = toSmartTitleCase(job.title);
             const jobKey = job.id; 
             
-            let badgesHTML = '';
-            if (isFeatured) {
-                badgesHTML += `<span class="badge-small" style="background: var(--badge-feat-bg); color: var(--badge-feat-txt);">${STAR_SVG} Featured</span>`;
-            }
-            
-            const dynBadge = getJobBadgeData(job);
-            if (dynBadge) {
-                badgesHTML += `<span class="badge-small" style="background: var(--badge-${dynBadge.type}-bg); color: var(--badge-${dynBadge.type}-txt);">${dynBadge.svg} ${dynBadge.text}</span>`;
-            }
+            const badges = getJobBadges(job);
+            let badgesHTML = badges.map(b => {
+                const miniIcon = b.svg.replace(/width="\d+" height="\d+"/, 'width="14" height="14"');
+                return `<span class="badge-small" style="background:${b.bg}; color:${b.color};">${miniIcon} ${b.text}</span>`;
+            }).join(' ');
             
             const isDisabled = maxReached && !isSelected;
 
@@ -397,8 +312,8 @@
                 <input type="checkbox" id="job-check-${jobKey}" ${isSelected ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
                 <div class="job-info">
                     <label for="job-check-${jobKey}" style="cursor: ${isDisabled ? 'not-allowed' : 'pointer'}; display: block; width: 100%;">
-                        <h3>${titleCaseTitle} ${badgesHTML}</h3>
-                        <p>${employer} &nbsp;|&nbsp; <span style="color:#d32f2f; display:flex; align-items:center;">${PIN_SVG}</span> &nbsp;${location}</p>
+                        <h3>${smartTitle} ${badgesHTML}</h3>
+                        <p>${employer} &nbsp;|&nbsp; <span style="color:#d32f2f; display:flex; align-items:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> &nbsp;${location}</p>
                     </label>
                 </div>
             `;
@@ -406,7 +321,7 @@
             const checkbox = div.querySelector('input');
             checkbox.addEventListener('change', (e) => {
                 if(e.target.checked) {
-                    if (selectedJobsMap.size < 4) {
+                    if (selectedJobsMap.size < 3) { 
                         selectedJobsMap.set(jobKey, job);
                     } else {
                         e.target.checked = false; 
@@ -415,7 +330,6 @@
                 } else {
                     selectedJobsMap.delete(jobKey);
                 }
-                
                 updateButtonState();
                 renderChecklist(currentFilteredJobs); 
             });
@@ -427,7 +341,7 @@
             const container = document.getElementById('job-list-container');
             container.innerHTML = '';
             
-            const maxReached = selectedJobsMap.size >= 4;
+            const maxReached = selectedJobsMap.size >= 3; 
 
             const selectedVisible = filteredJobsList.filter(job => selectedJobsMap.has(job.id));
             selectedVisible.forEach((job) => { container.appendChild(buildJobRow(job, true, maxReached)); });
@@ -440,6 +354,7 @@
             }
 
             updateButtonState();
+            updateLivePreview(); 
         }
 
         function updateButtonState() {
@@ -447,92 +362,148 @@
             const clearBtn = document.getElementById('clear-btn');
             const count = selectedJobsMap.size;
             
-            if (count === 4) {
-                genBtn.innerText = `Download Social Tile (4/4 Ready)`;
+            if (count === 3) {
+                genBtn.innerText = `Download Image (3/3 Ready!)`;
                 genBtn.disabled = false;
                 genBtn.style.background = 'var(--primary-color)';
             } else {
-                genBtn.innerText = `Download Social Tile (${count}/4 Selected)`;
+                genBtn.innerText = `Download Image (${count}/3 Selected)`;
                 genBtn.disabled = true;
                 genBtn.style.background = '#ccc';
             }
-            
             clearBtn.style.display = count > 0 ? 'block' : 'none';
         }
 
+        function buildTileHTML(selectedJobs) {
+            const customTitle = document.getElementById('tile-title-input').value.trim() || 'The Daily Drop';
+            const uniqueTowns = [...new Set(selectedJobs.map(job => (job.location || '').replace(/,\s*Victoria,\s*Australia/i, '').trim()))].filter(Boolean);
+            const subtextLine = `${getFormattedDate()} • ${uniqueTowns.join(' • ')}`;
+            
+            let html = `
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 900px; height: 900px; opacity: 0.03; background-image: url(${cachedLogoBase64}); background-repeat: no-repeat; background-position: center; background-size: contain; z-index: 1; pointer-events: none;"></div>
+                
+                <div style="text-align: center; margin-bottom: 35px; z-index: 2; position: relative;">
+                    <img src="${cachedLogoBase64}" style="height: 125px; margin-bottom: 15px;">
+                    <h1 style="margin: 0; font-size: 60px; font-weight: 900; color: #111; letter-spacing: -1.5px; line-height: 1.1;">${customTitle}</h1>
+                    <p style="font-size: 24px; color: var(--primary-color); font-weight: 800; margin: 10px 0 0 0; text-transform: uppercase; letter-spacing: 2px;">${subtextLine}</p>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 20px; flex-grow: 1; z-index: 2; position: relative; justify-content: center;">
+            `;
+
+            selectedJobs.forEach((job) => {
+                const employer = job.employer?.name || 'Local Employer';
+                const location = (job.location || '').replace(/,\s*Victoria,\s*Australia/i, '').trim();
+                const smartTitle = toSmartTitleCase(job.title);
+                
+                const isVerified = job.featured || job.pin_to_top;
+                const leftBorderColor = isVerified ? 'var(--primary-color)' : '#cbd5e1';
+
+                const badges = getJobBadges(job);
+                const tagStyle = "display:inline-flex; align-items:center; gap:8px; font-size:24px; font-weight:800;";
+                
+                let unifiedTagsHTML = badges.map(b => {
+                    return `<span style="${tagStyle} color:${b.textColor};">${b.svg} ${b.text}</span>`;
+                }).join('');
+
+                html += `
+                    <div style="background: #fff; border-radius: 20px; padding: 30px 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border-left: 12px solid ${leftBorderColor}; display: flex; flex-direction: column; justify-content: space-between;">
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 20px;">
+                            <h2 style="font-size: 44px; font-weight: 900; margin: 0; line-height: 1.15; color: #111; flex: 1;">${smartTitle}</h2>
+                            
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 28px; font-weight: 900; color: #e53935; text-transform: uppercase; text-align: right; flex-shrink: 0; padding-top: 12px;">
+                                ${PIN_SVG} <span style="color: #333;">${location}</span>
+                            </div>
+                        </div>
+                        
+                        <div style="font-size: 28px; font-weight: 700; color: #666; margin-bottom: 15px;">
+                            ${employer}
+                        </div>
+                        
+                        <div style="border-top: 2px solid #f1f5f9; padding-top: 15px; display: flex; gap: 30px; align-items: center; white-space: nowrap; overflow: hidden;">
+                            ${unifiedTagsHTML}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                </div>
+                
+                <div style="text-align: center; margin-top: 40px; font-size: 32px; font-weight: 700; color: #444; background: #fff; padding: 22px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); z-index: 2; position: relative;">
+                    Apply now at <span style="color: var(--primary-color);">gippslander.com.au/jobs</span>
+                </div>
+            `;
+
+            return html;
+        }
+
+        function updateLivePreview() {
+            const selectedJobs = Array.from(selectedJobsMap.values());
+            const textContainer = document.getElementById('social-text-container');
+            const previewArea = document.getElementById('preview-render-area');
+            const exportArea = document.getElementById('export-template');
+            
+            const customTitle = document.getElementById('tile-title-input').value.trim() || 'The Daily Drop';
+
+            if (selectedJobs.length === 0) {
+                textContainer.style.display = 'none'; 
+                previewArea.innerHTML = `<div class="empty-state">Select 3 jobs to generate</div>`;
+                return;
+            }
+
+            const htmlContent = buildTileHTML(selectedJobs);
+            
+            previewArea.innerHTML = htmlContent;
+            exportArea.innerHTML = htmlContent;
+            
+            if (selectedJobs.length === 3) {
+                textContainer.style.display = 'block';
+                
+                let captionText = `🚨 **${customTitle}!** 🚨\n\n`;
+                captionText += `We’ve pulled the top 3 roles generating the most interest across Gippsland right now. Whether you’re looking to step up, scale back, or change lanes, these employers want to hear from you.\n\n`;
+                captionText += `👇 Tag a mate who needs to see this, and check the comments for direct links to apply!\n\n🔗 gippslander.com.au/jobs`;
+                
+                document.getElementById('fb-caption').value = captionText;
+
+                let commentText = `Here are the direct links to apply for today's top roles:\n\n`;
+                selectedJobs.forEach(job => {
+                    const smartTitle = toSmartTitleCase(job.title);
+                    const employer = job.employer?.name || 'Local Employer';
+                    commentText += `🔗 ${smartTitle} at ${employer}:\ngippslander.au/${job.id}\n\n`;
+                });
+                document.getElementById('fb-comment').value = commentText.trim();
+            } else {
+                textContainer.style.display = 'none';
+            }
+        }
+
         function generateSocialTile() {
-            if (selectedJobsMap.size !== 4) return;
+            if (selectedJobsMap.size !== 3) return;
 
             const btn = document.getElementById('generate-btn');
             const currentText = btn.innerText;
             btn.innerText = "Generating Image... Please wait";
             btn.disabled = true;
 
-            const selectedJobs = Array.from(selectedJobsMap.values());
-            const grid = document.getElementById('social-grid-container');
+            const element = document.getElementById('export-template');
             
-            const customTitle = document.getElementById('tile-title-input').value.trim() || 'Jobs of the Week';
-            document.getElementById('social-title-text').innerText = customTitle;
-            
-            const uniqueTowns = [...new Set(selectedJobs.map(job => (job.location || '').replace(/,\s*Victoria,\s*Australia/i, '').trim()))].filter(Boolean);
-            document.getElementById('social-locations-text').innerText = uniqueTowns.join(' • ');
-
-            if(cachedLogoBase64) document.getElementById('social-safe-logo').src = cachedLogoBase64;
-
-            grid.innerHTML = selectedJobs.map((job) => {
-                const category = job.category?.name || 'General';
-                const employer = job.employer?.name || 'Local Employer';
-                const location = (job.location || '').replace(/,\s*Victoria,\s*Australia/i, '');
-                const isFeat = job.featured || job.pin_to_top;
-                
-                // Generate Title Case for the final image
-                const titleCaseTitle = toTitleCase(job.title);
-
-                let socialBadgesHTML = '';
-                if (isFeat) {
-                    socialBadgesHTML += `<span class="soc-badge" style="background: var(--badge-feat-bg); color: var(--badge-feat-txt);">${STAR_SVG} Featured</span>`;
-                }
-
-                const dynBadge = getJobBadgeData(job);
-                if (dynBadge) {
-                    socialBadgesHTML += `<span class="soc-badge" style="background: var(--badge-${dynBadge.type}-bg); color: var(--badge-${dynBadge.type}-txt);">${dynBadge.svg} ${dynBadge.text}</span>`;
-                }
-                
-                const leftBorderColor = isFeat ? '#f57c00' : 'var(--primary-color)';
-
-                return `
-                    <div class="social-card" style="border-left-color: ${leftBorderColor};">
-                        <div class="social-category-row">
-                            <span class="social-category">${category}</span>
-                            <div class="social-badges">${socialBadgesHTML}</div>
-                        </div>
-                        <h2 class="social-title">${titleCaseTitle}</h2>
-                        <div class="social-bottom-row">
-                            <span class="social-company">${employer}</span>
-                            <span style="color: #ccc;">•</span>
-                            <span class="social-location"><span style="color:#e53935; display:flex;">${PIN_SVG}</span> ${location}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            setTimeout(() => {
-                const element = document.getElementById('social-template');
-                
+            document.fonts.ready.then(() => {
                 html2canvas(element, { 
                     scale: 2, 
                     useCORS: true, 
                     backgroundColor: null 
                 }).then(canvas => {
                     const link = document.createElement('a');
-                    link.download = `Gippslander-Social-${new Date().toISOString().slice(0,10)}.png`;
+                    link.download = `Gippslander-Jobs-${new Date().toISOString().slice(0,10)}.png`;
                     link.href = canvas.toDataURL('image/png');
                     link.click();
                     
                     btn.innerText = currentText;
                     btn.disabled = false;
                 });
-            }, 300);
+            });
         }
     </script>
 </body>
