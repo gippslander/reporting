@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gippslander PDF Flyer Generator</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --text-main: #1a1a1a;
+            --bg-color: #f4f7f6;
+            --font-main: 'Poppins', sans-serif;
+        }
+
+        body { font-family: var(--font-main); background-color: var(--bg-color); margin: 0; padding: 40px 20px; color: var(--text-main); }
+        
+        /* --- DASHBOARD UI --- */
+        .dashboard { max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
+        .dash-header img { height: 40px; object-fit: contain; }
+        .dash-header span { font-weight: 600; color: #666; background: #eee; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem;}
+        
+        .controls { display: flex; gap: 15px; margin-bottom: 15px; }
+        input[type="text"], select { flex: 1; padding: 12px 20px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; font-family: inherit; outline: none; transition: border-color 0.2s;}
+        input[type="text"]:focus, select:focus { border-color: var(--primary-color); }
+        
+        button { background: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 1rem; }
+        button:hover { background: #388E3C; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        
+        .filter-bar { display: none; align-items: center; gap: 20px; background: #f8f9fa; padding: 15px 20px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee; }
+        .filter-bar label { display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; user-select: none; }
+        .filter-bar input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary-color); }
+
+        .list-header { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+        .btn-select-all { background: transparent; color: #0d47a1; border: 1px solid #0d47a1; padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; }
+        .btn-select-all:hover { background: #e3f2fd; }
+
+        .job-list { display: flex; flex-direction: column; gap: 10px; max-height: 500px; overflow-y: auto; border: 1px solid #eee; padding: 15px; border-radius: 8px; background: #fafafa; }
+        .job-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); border-left: 4px solid #ddd; transition: transform 0.1s;}
+        .job-item:hover { transform: translateX(2px); border-color: #aaa;}
+        .job-item.selected-item { border-left: 4px solid var(--primary-color); background: #f0fdf4; border-top: 1px solid #c6f6d5; border-right: 1px solid #c6f6d5; border-bottom: 1px solid #c6f6d5;}
+        .job-item input { width: 22px; height: 22px; cursor: pointer; accent-color: var(--primary-color);}
+        
+        .job-info { flex: 1; display: flex; flex-direction: column; justify-content: center;}
+        .job-info h3 { margin: 0 0 5px 0; font-size: 1.1rem; cursor: pointer;}
+        .job-info p { margin: 0; font-size: 0.9rem; color: #666; display: flex; align-items: center; }
+        .badge-small { display: inline-flex; align-items: center; background: #fff59d; color: #f57f17; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; font-weight: 700; margin-left: 10px; vertical-align: middle;}
+
+        .admin-options { background: #e3f2fd; padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid #bbdefb; display: flex; align-items: center; justify-content: center; gap: 25px; font-weight: 600; color: #0d47a1;}
+        .admin-options input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: #0d47a1; }
+        
+        .action-row { display: flex; gap: 15px; margin-top: 15px; }
+        .btn-generate { flex: 1; background: #0d47a1; font-size: 1.2rem; padding: 15px; box-shadow: 0 4px 15px rgba(13, 71, 161, 0.2);}
+        .btn-generate:hover { background: #002171; box-shadow: 0 6px 20px rgba(13, 71, 161, 0.3);}
+        .btn-clear { background: #e53935; font-size: 1.1rem; padding: 15px 25px; display: none; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;}
+        .btn-clear:hover { background: #c62828; }
+
+        /* --- PDF TEMPLATE --- */
+        #pdf-wrapper { position: absolute; left: -9999px; top: 0; }
+        
+        #pdf-template { width: 800px; background: white; padding: 40px; box-sizing: border-box; color: #000; }
+        
+        /* STRICT FONT ENFORCEMENT FOR THE GENERATOR */
+        #pdf-template * { font-family: 'Poppins', sans-serif !important; }
+        
+        .pdf-header { text-align: center; margin-bottom: 25px; border-bottom: 3px solid var(--primary-color); padding-bottom: 15px; position: relative;}
+        .pdf-header img { height: 50px; object-fit: contain; margin-bottom: 10px; }
+        .pdf-header h1 { margin: 0; font-size: 32px; font-weight: 800; color: #1a1a1a; }
+        .pdf-edition-bar { font-size: 14px; font-weight: 700; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;}
+        #pdf-featured-locations { font-size: 13px; color: var(--primary-color); font-weight: 700; margin: 8px 0 0 0; display: block; line-height: 1.4;}
+
+        .pdf-grid { display: block; width: 100%; }
+        .pdf-hard-break { page-break-before: always !important; display: block; width: 100%; height: 1px; }
+
+        .pdf-card { 
+            display: block; width: 100%; box-sizing: border-box; 
+            border: 2px solid #ddd; border-radius: 12px; background: #fff; margin: 0 0 16px 0; 
+        }
+
+        .pdf-card-inner {
+            display: table;
+            width: 100%;
+            padding: 18px 20px; 
+            box-sizing: border-box;
+            table-layout: fixed; /* IRONCLAD FIX: Forces cells to respect widths strictly */
+        }
+
+        .pdf-card-main { 
+            display: table-cell;
+            width: 65%; 
+            vertical-align: middle; 
+            padding-right: 25px; 
+            word-wrap: break-word; /* Ensures large text blocks snap to next line */
+        }
+        
+        .pdf-qr-section { 
+            display: table-cell;
+            width: 35%; 
+            vertical-align: middle; 
+            border-left: 2px dashed #eee; padding-left: 15px; text-align: center; 
+        }
+
+        .pdf-category { display: block; font-size: 12px; color: var(--primary-color); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;}
+        .pdf-title { font-size: 18px; font-weight: 800; margin: 0 0 4px 0; line-height: 1.2; }
+        .pdf-company { font-size: 14px; font-weight: 600; color: #444; margin: 0 0 4px 0; }
+        .pdf-location { font-size: 13px; color: #666; margin: 0 0 6px 0; display: block; }
+        .pdf-desc { font-size: 12px; color: #555; line-height: 1.4; margin-bottom: 0; word-wrap: break-word; }
+        
+        .pdf-qr-img { margin: 0 auto 6px auto; width: 75px; height: 75px; }
+        .pdf-qr-text { font-size: 12px; font-weight: 700; color: var(--primary-color); text-align: center; display: block; margin-bottom: 6px;}
+        
+        .pdf-qr-sub { 
+            display: inline-block; font-size: 10.5px; color: #1a1a1a; font-weight: 800; 
+            text-align: center; background: #f0f0f0; padding: 6px 8px; border-radius: 6px; 
+            letter-spacing: 0px; white-space: nowrap; max-width: 100%; box-sizing: border-box;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <div class="dash-header">
+            <img src="" id="main-dash-logo" alt="Gippslander Logo">
+            <span id="status-text">System Ready</span>
+        </div>
+
+        <div class="controls">
+            <input type="text" id="town-input" placeholder="Search by Region or Town (Leave blank for all jobs)">
+            <button onclick="fetchJobs()" id="fetch-btn">Search Jobs</button>
+        </div>
+        
+        <div class="controls">
+            <input type="text" id="flyer-title-input" placeholder="Edition Name (e.g., South Gippsland Jobs)" value="Local Job Opportunities">
+        </div>
+
+        <div class="filter-bar" id="filters-container">
+            <select id="location-filter" onchange="applyFilters()">
+                <option value="all">All Searched Locations</option>
+            </select>
+            <label>
+                <input type="checkbox" id="featured-filter" onchange="applyFilters()"> Featured / Premium Only
+            </label>
+        </div>
+        
+        <div class="list-header" id="list-header-controls" style="display: none;">
+            <button class="btn-select-all" id="btn-select-all" onclick="toggleSelectAll()">Select All Visible</button>
+        </div>
+
+        <div class="job-list" id="job-list-container">
+            <div style="padding: 30px; text-align: center; color: #888; font-size: 1.1rem;">Loading jobs...</div>
+        </div>
+
+        <div class="admin-options">
+            <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="include-courses" checked>
+                + Courses Card
+            </label>
+            <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="include-alerts" checked>
+                + Email Alerts Card
+            </label>
+        </div>
+
+        <div class="action-row">
+            <button class="btn-generate" id="generate-btn" onclick="generatePDF()" disabled>Download PDF Flyer (0 selected)</button>
+            <button class="btn-clear" id="clear-btn" onclick="clearSelection()">Clear Selection</button>
+        </div>
+    </div>
+
+    <div id="pdf-wrapper">
+        <div id="pdf-template">
+            <div class="pdf-header">
+                <img id="pdf-safe-logo" src="" alt="Gippslander Logo">
+                <h1 id="pdf-title-town">Local Job Opportunities</h1>
+                <div class="pdf-edition-bar" id="pdf-date-line"></div>
+                <span id="pdf-featured-locations"></span>
+            </div>
+            <div class="pdf-grid" id="pdf-grid-container"></div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_API_URL = 'https://gippsland-jobs-proxy.vercel.app/api/jobs?towns=';
+        const LOGO_URL = 'https://raw.githubusercontent.com/gippslander/assets/main/gippslander_com_au_logo.png';
+        
+        const STAR_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="#fbc02d" style="vertical-align: middle; margin-bottom: 2px;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+        const PIN_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d32f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-bottom: 2px; margin-right: 4px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`;
+        const BOOK_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0d47a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-bottom: 2px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>`;
+        const LAPTOP_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-bottom: 2px; margin-right: 4px;"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>`;
+        const BELL_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f57f17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-bottom: 2px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>`;
+
+        let fetchedJobs = []; 
+        let currentFilteredJobs = []; 
+        let selectedJobsMap = new Map();
+        let cachedLogoBase64 = null; 
+
+        window.onload = () => {
+            const img = new Image();
+            img.crossOrigin = 'Anonymous';
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width; canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                cachedLogoBase64 = canvas.toDataURL('image/png');
+                document.getElementById('main-dash-logo').src = cachedLogoBase64;
+                document.getElementById('pdf-safe-logo').src = cachedLogoBase64;
+            };
+            img.src = LOGO_URL;
+            fetchJobs();
+        };
+
+        function buildTrackingUrl(baseLink) {
+            try {
+                const url = new URL(baseLink);
+                url.searchParams.set('utm_source', 'print_flyer');
+                url.searchParams.set('utm_campaign', 'expo_handout');
+                return url.toString();
+            } catch(e) { return baseLink; }
+        }
+
+        function drawQR(elementId, url) {
+            const container = document.getElementById(elementId);
+            if (!container) return;
+            container.innerHTML = ''; 
+            
+            const qrWrapper = document.createElement('div');
+            qrWrapper.className = 'pdf-qr-img';
+            container.appendChild(qrWrapper);
+
+            new QRCode(qrWrapper, {
+                text: url, width: 75, height: 75,
+                colorDark : "#1a1a1a", colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.M
+            });
+        }
+
+        function clearSelection() {
+            selectedJobsMap.clear();
+            applyFilters();
+            updateButtonState();
+        }
+
+        function toggleSelectAll() {
+            const allSelected = currentFilteredJobs.every(job => selectedJobsMap.has(job.id));
+            if (allSelected) {
+                currentFilteredJobs.forEach(job => selectedJobsMap.delete(job.id));
+            } else {
+                currentFilteredJobs.forEach(job => selectedJobsMap.set(job.id, job));
+            }
+            applyFilters(); 
+            updateButtonState();
+        }
+
+        async function fetchJobs() {
+            const towns = document.getElementById('town-input').value;
+            const btn = document.getElementById('fetch-btn');
+            const container = document.getElementById('job-list-container');
+            const status = document.getElementById('status-text');
+
+            btn.innerText = "Fetching...";
+            btn.disabled = true;
+            status.innerText = "Loading data...";
+            document.getElementById('filters-container').style.display = 'none';
+            document.getElementById('list-header-controls').style.display = 'none';
+
+            try {
+                const response = await fetch(BASE_API_URL + encodeURIComponent(towns));
+                const data = await response.json();
+                
+                fetchedJobs = data.filter(j => j.title && j.final_status === 'active');
+                
+                if (fetchedJobs.length === 0) {
+                    container.innerHTML = `<div style="padding: 30px; text-align: center; color: #ff3b30; font-weight: 600;">No active jobs found.</div>`;
+                    status.innerText = "0 Results";
+                } else {
+                    status.innerText = `Found ${fetchedJobs.length} jobs`;
+                    populateFilters();
+                    applyFilters(); 
+                }
+            } catch (error) {
+                container.innerHTML = `<div style="padding: 30px; text-align: center; color: #ff3b30; font-weight: 600;">Failed to fetch jobs. Check internet connection.</div>`;
+                status.innerText = "Network Error";
+            }
+
+            btn.innerText = "Search Jobs";
+            btn.disabled = false;
+        }
+
+        function populateFilters() {
+            const drop = document.getElementById('location-filter');
+            drop.innerHTML = '<option value="all">All Searched Locations</option>';
+            const locations = [...new Set(fetchedJobs.map(j => (j.location || '').replace(/,\s*Victoria,\s*Australia/i, '').trim()).filter(Boolean))];
+            locations.sort().forEach(loc => drop.innerHTML += `<option value="${loc}">${loc}</option>`);
+            document.getElementById('filters-container').style.display = 'flex';
+        }
+
+        function applyFilters() {
+            const locFilter = document.getElementById('location-filter').value;
+            const featFilter = document.getElementById('featured-filter').checked;
+
+            currentFilteredJobs = fetchedJobs.filter(job => {
+                const loc = (job.location || '').replace(/,\s*Victoria,\s*Australia/i, '').trim();
+                const isFeatured = job.featured || job.pin_to_top;
+                if (locFilter !== 'all' && loc !== locFilter) return false;
+                if (featFilter && !isFeatured) return false;
+                return true;
+            });
+
+            renderChecklist(currentFilteredJobs);
+            updateSelectAllButton();
+        }
+
+        function updateSelectAllButton() {
+            const btn = document.getElementById('btn-select-all');
+            const header = document.getElementById('list-header-controls');
+            if (currentFilteredJobs.length === 0) {
+                header.style.display = 'none'; return;
+            }
+            header.style.display = 'flex';
+            const allSelected = currentFilteredJobs.every(job => selectedJobsMap.has(job.id));
+            btn.innerText = allSelected ? "Deselect All Visible" : "Select All Visible";
+        }
+
+        function buildJobRow(job, isSelected) {
+            const employer = job.employer?.name || 'Local Employer';
+            const location = (job.location || '').replace(/,\s*Victoria,\s*Australia/i, '');
+            const isFeatured = job.featured || job.pin_to_top;
+            const jobKey = job.id; 
+            const badgeHTML = isFeatured ? `<span class="badge-small">${STAR_SVG} Featured</span>` : '';
+
+            const div = document.createElement('div');
+            div.className = isSelected ? 'job-item selected-item' : 'job-item';
+            div.innerHTML = `
+                <input type="checkbox" id="job-check-${jobKey}" ${isSelected ? 'checked' : ''}>
+                <div class="job-info">
+                    <label for="job-check-${jobKey}" style="cursor: pointer; display: block; width: 100%;">
+                        <h3>${job.title} ${badgeHTML}</h3>
+                        <p>${employer} &nbsp;|&nbsp; ${PIN_SVG} ${location}</p>
+                    </label>
+                </div>
+            `;
+
+            const checkbox = div.querySelector('input');
+            checkbox.addEventListener('change', (e) => {
+                if(e.target.checked) selectedJobsMap.set(jobKey, job);
+                else selectedJobsMap.delete(jobKey);
+                updateButtonState();
+                updateSelectAllButton();
+                applyFilters(); 
+            });
+
+            return div;
+        }
+
+        function renderChecklist(filteredJobsList) {
+            const container = document.getElementById('job-list-container');
+            container.innerHTML = '';
+
+            const selectedVisible = filteredJobsList.filter(job => selectedJobsMap.has(job.id));
+            selectedVisible.forEach((job) => container.appendChild(buildJobRow(job, true)));
+
+            const unselectedVisible = filteredJobsList.filter(job => !selectedJobsMap.has(job.id));
+            unselectedVisible.forEach((job) => container.appendChild(buildJobRow(job, false)));
+
+            if (filteredJobsList.length === 0) {
+                container.innerHTML = `<div style="padding: 20px; text-align: center; color: #666;">No jobs match your current filters.</div>`;
+            }
+
+            updateButtonState();
+        }
+
+        function updateButtonState() {
+            const genBtn = document.getElementById('generate-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const count = selectedJobsMap.size;
+            
+            genBtn.innerText = `Download PDF Flyer (${count} selected)`;
+            genBtn.disabled = count === 0;
+            clearBtn.style.display = count > 0 ? 'block' : 'none';
+        }
+
+        function generatePDF() {
+            const genBtn = document.getElementById('generate-btn');
+            const currentText = genBtn.innerText;
+            genBtn.innerText = "Generating PDF... Please wait";
+            genBtn.disabled = true;
+
+            if (selectedJobsMap.size === 0) return;
+
+            const selectedJobs = Array.from(selectedJobsMap.values());
+            const includeCourses = document.getElementById('include-courses').checked;
+            const includeAlerts = document.getElementById('include-alerts').checked;
+
+            const customTitle = document.getElementById('flyer-title-input').value.trim() || 'Local Job Opportunities';
+            document.getElementById('pdf-title-town').innerText = customTitle;
+
+            const dateStr = new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' });
+            document.getElementById('pdf-date-line').innerText = dateStr;
+
+            const uniqueTowns = [...new Set(selectedJobs.map(job => (job.location || '').replace(/,\s*Victoria,\s*Australia/i, '').trim()))].filter(Boolean);
+            const townsString = uniqueTowns.length > 0 ? `Featuring roles in: ${uniqueTowns.join(', ')}` : '';
+            document.getElementById('pdf-featured-locations').innerText = townsString;
+
+            const grid = document.getElementById('pdf-grid-container');
+            let allCards = [];
+
+            selectedJobs.forEach((job) => {
+                const category = job.category?.name || 'General';
+                const employer = job.employer?.name || 'Local Employer';
+                const location = (job.location || '').replace(/,\s*Victoria,\s*Australia/i, '');
+                
+                // HTML TAG STRIP FIX: Replaces tags with spaces so words never merge together.
+                let cleanDesc = (job.description || '')
+                    .replace(/<[^>]*>/g, ' ') 
+                    .replace(/\s\s+/g, ' ') 
+                    .trim();
+                
+                const shortDesc = cleanDesc.length > 150 ? cleanDesc.substring(0, 150) + '...' : cleanDesc;
+                const isFeat = job.featured || job.pin_to_top;
+                
+                allCards.push(`
+                    <div class="pdf-card" ${isFeat ? 'style="border-color: var(--primary-color);"' : ''}>
+                        <div class="pdf-card-inner">
+                            <div class="pdf-card-main">
+                                <span class="pdf-category">
+                                    ${category} 
+                                    <span style="float: right;">${isFeat ? STAR_SVG : ''}</span>
+                                </span>
+                                <h2 class="pdf-title">${job.title}</h2>
+                                <p class="pdf-company">${employer}</p>
+                                <span class="pdf-location">${PIN_SVG} ${location}</span>
+                                <p class="pdf-desc">${shortDesc}</p>
+                            </div>
+                            <div class="pdf-qr-section">
+                                <div id="pdf-qr-job-${job.id}"></div>
+                                <span class="pdf-qr-text">Scan to Apply →</span>
+                                <span class="pdf-qr-sub">gippslander.au/${job.id}</span>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            });
+
+            if (includeCourses) {
+                const coursesCard = `
+                    <div class="pdf-card" style="border-color: #0d47a1; background: #f4f8ff;">
+                        <div class="pdf-card-inner">
+                            <div class="pdf-card-main">
+                                <span class="pdf-category" style="color: #0d47a1;">
+                                    Level Up Your Skills
+                                    <span style="float: right;">${BOOK_SVG}</span>
+                                </span>
+                                <h2 class="pdf-title">Accredited Online Courses</h2>
+                                <p class="pdf-company">Gippslander</p>
+                                <span class="pdf-location">${LAPTOP_SVG} 100% Online</span>
+                                <p class="pdf-desc">Give your resume the edge! Courses include Victorian RSA, Barista Essentials, Food Safety, Customer Service Training and more. Fully accredited.</p>
+                            </div>
+                            <div class="pdf-qr-section" style="border-left-color: #bbdefb;">
+                                <div id="pdf-qr-courses"></div>
+                                <span class="pdf-qr-text" style="color: #0d47a1;">Scan to Enroll →</span>
+                                <span class="pdf-qr-sub">gippslander.au/courses</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                const insertPos = Math.min(2, allCards.length);
+                allCards.splice(insertPos, 0, coursesCard);
+            }
+
+            if (includeAlerts) {
+                const alertsCard = `
+                    <div class="pdf-card" style="border-color: #f57f17; background: #fffde7;">
+                        <div class="pdf-card-inner">
+                            <div class="pdf-card-main">
+                                <span class="pdf-category" style="color: #e65100;">
+                                    Never Miss A Job
+                                    <span style="float: right;">${BELL_SVG}</span>
+                                </span>
+                                <h2 class="pdf-title">Get Local Job Alerts</h2>
+                                <p class="pdf-company">Gippslander</p>
+                                <span class="pdf-location">${PIN_SVG} Sent straight to your inbox</span>
+                                <p class="pdf-desc">Want more local jobs? Scan the code or visit the link to get customized email alerts for your specific town and industry as soon as jobs are posted.</p>
+                            </div>
+                            <div class="pdf-qr-section" style="border-left-color: #ffe082;">
+                                <div id="pdf-qr-alerts"></div>
+                                <span class="pdf-qr-text" style="color: #e65100;">Scan to Subscribe →</span>
+                                <span class="pdf-qr-sub">gippslander.au/alerts</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                const insertPos = Math.min(6, allCards.length); 
+                allCards.splice(insertPos, 0, alertsCard);
+            }
+
+            let paginatedHTML = '';
+            let page1Cards = allCards.slice(0, 3);
+            paginatedHTML += `<div>${page1Cards.join('')}</div>`;
+            
+            let remainingCards = allCards.slice(3);
+            for (let i = 0; i < remainingCards.length; i += 4) {
+                let chunk = remainingCards.slice(i, i + 4);
+                paginatedHTML += `<div class="pdf-hard-break"></div>`; 
+                paginatedHTML += `<div>${chunk.join('')}</div>`;
+            }
+
+            grid.innerHTML = paginatedHTML;
+
+            setTimeout(() => {
+                selectedJobs.forEach((job) => {
+                    const rawUrl = `https://gippslander.au/${job.id}`;
+                    drawQR(`pdf-qr-job-${job.id}`, buildTrackingUrl(rawUrl));
+                });
+                
+                if (includeCourses) drawQR('pdf-qr-courses', buildTrackingUrl('https://gippslander.com.au/courses'));
+                if (includeAlerts) drawQR('pdf-qr-alerts', buildTrackingUrl('https://gippslander.com.au/alerts'));
+
+                const element = document.getElementById('pdf-template');
+                
+                const opt = {
+                    margin:       [25, 0, 15, 0], 
+                    filename:     `Gippslander-Jobs-${new Date().toISOString().slice(0,10)}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 }, 
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                    pagebreak:    { mode: ['css'] } 
+                };
+
+                html2pdf().set(opt).from(element).toPdf().get('pdf').then(function (pdf) {
+                    const totalPages = pdf.internal.getNumberOfPages();
+                    const pageWidth = pdf.internal.pageSize.getWidth();
+                    const pageHeight = pdf.internal.pageSize.getHeight();
+
+                    for (let i = 1; i <= totalPages; i++) {
+                        pdf.setPage(i);
+
+                        if (i > 1 && cachedLogoBase64) {
+                            const logoWidth = 35;
+                            const logoHeight = 8;
+                            const logoX = (pageWidth - logoWidth) / 2;
+                            pdf.addImage(cachedLogoBase64, 'PNG', logoX, 10, logoWidth, logoHeight); 
+                        }
+
+                        // Explicit font setting for jsPDF additions
+                        pdf.setFont("helvetica", "normal");
+                        pdf.setFontSize(9);
+                        pdf.setTextColor(150); 
+                        pdf.text('gippslander.com.au', 10, pageHeight - 6);
+
+                        const pageString = `Page ${i} of ${totalPages}`;
+                        pdf.text(pageString, pageWidth - 25, pageHeight - 6);
+                    }
+                }).save().then(() => {
+                    genBtn.innerText = currentText;
+                    genBtn.disabled = false;
+                });
+
+            }, 300); 
+        }
+    </script>
+</body>
+</html>
