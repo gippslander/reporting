@@ -79,11 +79,29 @@
         #pdf-featured-locations { font-size: 13px; color: var(--primary-color); font-weight: 700; margin: 8px 0 0 0; display: block; line-height: 1.4;}
 
         .pdf-grid { display: block; width: 100%; }
-        .pdf-hard-break { page-break-before: always !important; display: block; width: 100%; height: 1px; }
+
+        /* NATIVE HTML2PDF BREAK CLASS */
+        .html2pdf__page-break { page-break-before: always !important; display: block; width: 100%; height: 1px; }
+
+        /* INVISIBLE SPACER TO ABSORB RENDERER SLICING ERRORS */
+        .pdf-page-spacer { display: block; width: 100%; height: 20px; background: transparent; }
+
+        /* NEW WRAPPER TO USE PADDING INSTEAD OF MARGINS */
+        .pdf-card-wrapper {
+            padding-bottom: 16px;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            width: 100%;
+            display: block;
+            box-sizing: border-box;
+        }
 
         .pdf-card { 
             display: block; width: 100%; box-sizing: border-box; 
-            border: 2px solid #ddd; border-radius: 12px; background: #fff; margin: 0 0 16px 0; 
+            border: 2px solid #ddd; border-radius: 12px; background: #fff; 
+            /* Margin removed here to fix bounding box clipping */
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
         }
 
         .pdf-card-inner {
@@ -420,7 +438,6 @@
                 const employer = job.employer?.name || 'Local Employer';
                 const location = (job.location || '').replace(/,\s*Victoria,\s*Australia/i, '');
                 
-                // HTML TAG STRIP FIX: Replaces tags with spaces so words never merge together.
                 let cleanDesc = (job.description || '')
                     .replace(/<[^>]*>/g, ' ') 
                     .replace(/\s\s+/g, ' ') 
@@ -430,22 +447,24 @@
                 const isFeat = job.featured || job.pin_to_top;
                 
                 allCards.push(`
-                    <div class="pdf-card" ${isFeat ? 'style="border-color: var(--primary-color);"' : ''}>
-                        <div class="pdf-card-inner">
-                            <div class="pdf-card-main">
-                                <span class="pdf-category">
-                                    ${category} 
-                                    <span style="float: right;">${isFeat ? STAR_SVG : ''}</span>
-                                </span>
-                                <h2 class="pdf-title">${job.title}</h2>
-                                <p class="pdf-company">${employer}</p>
-                                <span class="pdf-location">${PIN_SVG} ${location}</span>
-                                <p class="pdf-desc">${shortDesc}</p>
-                            </div>
-                            <div class="pdf-qr-section">
-                                <div id="pdf-qr-job-${job.id}"></div>
-                                <span class="pdf-qr-text">Scan to Apply →</span>
-                                <span class="pdf-qr-sub">gippslander.au/${job.id}</span>
+                    <div class="pdf-card-wrapper">
+                        <div class="pdf-card" ${isFeat ? 'style="border-color: var(--primary-color);"' : ''}>
+                            <div class="pdf-card-inner">
+                                <div class="pdf-card-main">
+                                    <span class="pdf-category">
+                                        ${category} 
+                                        <span style="float: right;">${isFeat ? STAR_SVG : ''}</span>
+                                    </span>
+                                    <h2 class="pdf-title">${job.title}</h2>
+                                    <p class="pdf-company">${employer}</p>
+                                    <span class="pdf-location">${PIN_SVG} ${location}</span>
+                                    <p class="pdf-desc">${shortDesc}</p>
+                                </div>
+                                <div class="pdf-qr-section">
+                                    <div id="pdf-qr-job-${job.id}"></div>
+                                    <span class="pdf-qr-text">Scan to Apply →</span>
+                                    <span class="pdf-qr-sub">gippslander.au/${job.id}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -454,22 +473,24 @@
 
             if (includeCourses) {
                 const coursesCard = `
-                    <div class="pdf-card" style="border-color: #0d47a1; background: #f4f8ff;">
-                        <div class="pdf-card-inner">
-                            <div class="pdf-card-main">
-                                <span class="pdf-category" style="color: #0d47a1;">
-                                    Level Up Your Skills
-                                    <span style="float: right;">${BOOK_SVG}</span>
-                                </span>
-                                <h2 class="pdf-title">Accredited Online Courses</h2>
-                                <p class="pdf-company">Gippslander</p>
-                                <span class="pdf-location">${LAPTOP_SVG} 100% Online</span>
-                                <p class="pdf-desc">Give your resume the edge! Courses include Victorian RSA, Barista Essentials, Food Safety, Customer Service Training and more. Fully accredited.</p>
-                            </div>
-                            <div class="pdf-qr-section" style="border-left-color: #bbdefb;">
-                                <div id="pdf-qr-courses"></div>
-                                <span class="pdf-qr-text" style="color: #0d47a1;">Scan to Enroll →</span>
-                                <span class="pdf-qr-sub">gippslander.au/courses</span>
+                    <div class="pdf-card-wrapper">
+                        <div class="pdf-card" style="border-color: #0d47a1; background: #f4f8ff;">
+                            <div class="pdf-card-inner">
+                                <div class="pdf-card-main">
+                                    <span class="pdf-category" style="color: #0d47a1;">
+                                        Level Up Your Skills
+                                        <span style="float: right;">${BOOK_SVG}</span>
+                                    </span>
+                                    <h2 class="pdf-title">Accredited Online Courses</h2>
+                                    <p class="pdf-company">Gippslander</p>
+                                    <span class="pdf-location">${LAPTOP_SVG} 100% Online</span>
+                                    <p class="pdf-desc">Give your resume the edge! Courses include Victorian RSA, Barista Essentials, Food Safety, Customer Service Training and more. Fully accredited.</p>
+                                </div>
+                                <div class="pdf-qr-section" style="border-left-color: #bbdefb;">
+                                    <div id="pdf-qr-courses"></div>
+                                    <span class="pdf-qr-text" style="color: #0d47a1;">Scan to Enroll →</span>
+                                    <span class="pdf-qr-sub">gippslander.au/courses</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -480,22 +501,24 @@
 
             if (includeAlerts) {
                 const alertsCard = `
-                    <div class="pdf-card" style="border-color: #f57f17; background: #fffde7;">
-                        <div class="pdf-card-inner">
-                            <div class="pdf-card-main">
-                                <span class="pdf-category" style="color: #e65100;">
-                                    Never Miss A Job
-                                    <span style="float: right;">${BELL_SVG}</span>
-                                </span>
-                                <h2 class="pdf-title">Get Local Job Alerts</h2>
-                                <p class="pdf-company">Gippslander</p>
-                                <span class="pdf-location">${PIN_SVG} Sent straight to your inbox</span>
-                                <p class="pdf-desc">Want more local jobs? Scan the code or visit the link to get customized email alerts for your specific town and industry as soon as jobs are posted.</p>
-                            </div>
-                            <div class="pdf-qr-section" style="border-left-color: #ffe082;">
-                                <div id="pdf-qr-alerts"></div>
-                                <span class="pdf-qr-text" style="color: #e65100;">Scan to Subscribe →</span>
-                                <span class="pdf-qr-sub">gippslander.au/alerts</span>
+                    <div class="pdf-card-wrapper">
+                        <div class="pdf-card" style="border-color: #f57f17; background: #fffde7;">
+                            <div class="pdf-card-inner">
+                                <div class="pdf-card-main">
+                                    <span class="pdf-category" style="color: #e65100;">
+                                        Never Miss A Job
+                                        <span style="float: right;">${BELL_SVG}</span>
+                                    </span>
+                                    <h2 class="pdf-title">Get Local Job Alerts</h2>
+                                    <p class="pdf-company">Gippslander</p>
+                                    <span class="pdf-location">${PIN_SVG} Sent straight to your inbox</span>
+                                    <p class="pdf-desc">Want more local jobs? Scan the code or visit the link to get customized email alerts for your specific town and industry as soon as jobs are posted.</p>
+                                </div>
+                                <div class="pdf-qr-section" style="border-left-color: #ffe082;">
+                                    <div id="pdf-qr-alerts"></div>
+                                    <span class="pdf-qr-text" style="color: #e65100;">Scan to Subscribe →</span>
+                                    <span class="pdf-qr-sub">gippslander.au/alerts</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -504,6 +527,7 @@
                 allCards.splice(insertPos, 0, alertsCard);
             }
 
+            // STRICT PAGINATION: 3 on page 1, 4 on subsequent pages
             let paginatedHTML = '';
             let page1Cards = allCards.slice(0, 3);
             paginatedHTML += `<div>${page1Cards.join('')}</div>`;
@@ -511,7 +535,12 @@
             let remainingCards = allCards.slice(3);
             for (let i = 0; i < remainingCards.length; i += 4) {
                 let chunk = remainingCards.slice(i, i + 4);
-                paginatedHTML += `<div class="pdf-hard-break"></div>`; 
+                
+                // Use html2pdf's native forced page break class
+                paginatedHTML += `<div class="html2pdf__page-break"></div>`; 
+                // INSERT INVISIBLE SPACER TO ABSORB RENDERER ERRORS
+                paginatedHTML += `<div class="pdf-page-spacer"></div>`;
+                
                 paginatedHTML += `<div>${chunk.join('')}</div>`;
             }
 
@@ -534,7 +563,8 @@
                     image:        { type: 'jpeg', quality: 0.98 },
                     html2canvas:  { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 }, 
                     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                    pagebreak:    { mode: ['css'] } 
+                    // STRICT LEGACY MODE: Forces html2pdf to respect our manual .html2pdf__page-break divs
+                    pagebreak:    { mode: 'legacy' } 
                 };
 
                 html2pdf().set(opt).from(element).toPdf().get('pdf').then(function (pdf) {
@@ -552,7 +582,6 @@
                             pdf.addImage(cachedLogoBase64, 'PNG', logoX, 10, logoWidth, logoHeight); 
                         }
 
-                        // Explicit font setting for jsPDF additions
                         pdf.setFont("helvetica", "normal");
                         pdf.setFontSize(9);
                         pdf.setTextColor(150); 
