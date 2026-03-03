@@ -27,11 +27,8 @@
 
         body { font-family: var(--font-main); background-color: var(--bg-color); margin: 0; padding: 40px 20px; color: var(--text-main); }
         
-        /* --- APP LAYOUT --- */
-        .app-wrapper { display: flex; gap: 40px; max-width: 1400px; margin: 0 auto; align-items: flex-start; justify-content: center; }
-
         /* --- DASHBOARD UI --- */
-        .dashboard { flex: 1; min-width: 500px; max-width: 800px; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .dashboard { max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         
         .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
         .dash-header img { height: 40px; object-fit: contain; }
@@ -45,13 +42,15 @@
         button:hover { opacity: 0.9; }
         button:disabled { background: #ccc !important; cursor: not-allowed; opacity: 1; }
         
+        /* --- FILTER BAR --- */
         .filter-bar { display: none; align-items: center; gap: 20px; background: #f8f9fa; padding: 15px 20px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
         .filter-bar label { display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; user-select: none; }
         .filter-bar input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary-color); }
 
-        .job-list { display: flex; flex-direction: column; gap: 10px; height: 500px; overflow-y: auto; border: 1px solid #eee; padding: 15px; border-radius: 8px; background: #fafafa; }
+        .job-list { display: flex; flex-direction: column; gap: 10px; max-height: 500px; overflow-y: auto; border: 1px solid #eee; padding: 15px; border-radius: 8px; background: #fafafa; }
         .job-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); border-left: 4px solid #ddd; transition: transform 0.1s;}
         .job-item:hover { transform: translateX(2px); border-color: #aaa;}
+        
         .job-item.selected-item { border-left: 4px solid var(--primary-color); background: #f0fdf4; border-top: 1px solid #c6f6d5; border-right: 1px solid #c6f6d5; border-bottom: 1px solid #c6f6d5;}
         .job-item input { width: 22px; height: 22px; cursor: pointer; accent-color: var(--primary-color);}
         .job-item input:disabled { cursor: not-allowed; }
@@ -61,131 +60,192 @@
         .job-info { flex: 1; display: flex; flex-direction: column; justify-content: center;}
         .job-info h3 { margin: 0 0 6px 0; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; flex-wrap: wrap; gap: 8px;}
         .job-info p { margin: 0; font-size: 0.9rem; color: #666; display: flex; align-items: center; }
+        
         .job-info svg { width: 16px !important; height: 16px !important; flex-shrink: 0; }
         
-        .badge-small { display: inline-flex; align-items: center; gap: 4px; font-size: 0.65rem; padding: 4px 8px; border-radius: 6px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1; }
+        .badge-small { 
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 0.65rem; padding: 4px 8px; border-radius: 6px; 
+            font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+            line-height: 1;
+        }
         .badge-small svg { width: 10px !important; height: 10px !important; }
 
+        /* --- ACTION CONTROLS --- */
         .action-row { display: flex; gap: 15px; margin-top: 25px; }
         .btn-generate { flex: 1; background: #ccc; font-size: 1.2rem; padding: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);}
         .btn-generate:hover:not(:disabled) { box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);}
         .btn-clear { background: #e53935; font-size: 1.1rem; padding: 15px 25px; display: none; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;}
         .btn-clear:hover { background: #c62828; }
 
-        /* --- GENERATED TEXT BOX UI --- */
-        .social-text-box { display: none; background: #e8f5e9; border: 1px solid #c8e6c9; padding: 20px; border-radius: 12px; margin-top: 25px; }
-        .social-text-box h4 { margin: 0 0 15px 0; color: #2e7d32; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
-        .social-text-box p { margin: 10px 0 5px 0; font-size: 0.9rem; font-weight: 700; color: #1a1a1a; }
-        .social-text-box textarea { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-family: inherit; font-size: 0.9rem; resize: vertical; outline: none; background: white; color: #333; line-height: 1.5; }
-        .social-text-box textarea:focus { border-color: var(--primary-color); }
-
-        /* --- PREVIEW UI --- */
-        .preview-container { position: sticky; top: 40px; width: 486px; height: 486px; border-radius: 15px; box-shadow: 0 15px 40px rgba(0,0,0,0.1); overflow: hidden; background: #e9ecef; flex-shrink: 0; border: 4px solid white; }
-        #social-wrapper { transform: scale(0.45); transform-origin: top left; width: 1080px; height: 1080px; }
+        /* --- HIDDEN SOCIAL TILE TEMPLATE --- */
+        #social-wrapper { position: absolute; left: -9999px; top: 0; }
         
-        #social-template { width: 1080px; height: 1080px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 50px 60px; box-sizing: border-box; color: #1a1a1a; display: flex; flex-direction: column; position: relative; }
-        #social-template * { position: relative; z-index: 2; }
-        .watermark { position: absolute !important; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px; height: 800px; opacity: 0.03; background-repeat: no-repeat; background-position: center; background-size: contain; pointer-events: none; z-index: 1 !important; }
+        #social-template { 
+            width: 1080px; 
+            height: 1080px; 
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 50px 60px; 
+            box-sizing: border-box; 
+            color: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+        }
 
         .social-header { text-align: center; margin-bottom: 25px; }
         .social-header img { height: 70px; object-fit: contain; margin-bottom: 8px; }
         .social-header h1 { margin: 0; font-size: 52px; font-weight: 800; color: #1a1a1a; letter-spacing: -1px; line-height: 1.1; }
         .social-header p { font-size: 20px; color: var(--primary-color); font-weight: 800; margin: 8px 0 0 0; text-transform: uppercase; letter-spacing: 2px; }
 
-        .social-grid { display: flex; flex-direction: column; justify-content: space-between; gap: 16px; flex-grow: 1; }
-        .social-card { background: #fff; border-radius: 16px; padding: 18px 30px; box-shadow: 0 8px 20px rgba(0,0,0,0.04); border-left: 10px solid #cbd5e1; display: flex; flex-direction: column; justify-content: center; }
+        /* HORIZONTAL LIST LAYOUT */
+        .social-grid {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 16px;
+            flex-grow: 1;
+        }
 
-        .social-category-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .social-category { font-size: 15px; color: var(--primary-color); font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; line-height: 1.2;}
-        .social-badges { display: flex; gap: 10px; }
+        .social-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 18px 30px; /* Tightened top/bottom slightly to fit bigger text */
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+            border-left: 10px solid var(--primary-color); 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .social-category-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 8px; 
+        }
         
-        .soc-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 900; padding: 6px 14px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .social-category { 
+            font-size: 15px; 
+            color: var(--primary-color); 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            letter-spacing: 1.2px; 
+            line-height: 1.2;
+        }
+        
+        .social-badges { 
+            display: flex; 
+            gap: 10px; 
+        }
+        
+        /* BIGGER, BOLDER BADGES */
+        .soc-badge { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 6px; 
+            font-size: 14px; /* Increased */
+            font-weight: 900; /* Max boldness */
+            padding: 6px 14px; /* Slightly thicker */
+            border-radius: 999px; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px; 
+            line-height: 1;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Subtle lift */
+        }
+        
         .soc-badge svg { width: 16px !important; height: 16px !important; stroke-width: 2.5px; }
         
-        .social-title { font-size: 34px; font-weight: 800; margin: 0 0 8px 0; line-height: 1.2; color: #000; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .social-bottom-row { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 600; color: #666;}
+        /* BIGGER JOB TITLE */
+        .social-title { 
+            font-size: 34px; /* Increased */
+            font-weight: 800; 
+            margin: 0 0 8px 0; 
+            line-height: 1.2; 
+            color: #000; /* Maximum contrast */
+            display: -webkit-box; 
+            -webkit-line-clamp: 2; 
+            -webkit-box-orient: vertical; 
+            overflow: hidden; 
+        }
+        
+        /* BIGGER COMPANY & LOCATION ROW */
+        .social-bottom-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px; /* Increased from 18px */
+            font-weight: 600;
+            color: #666;
+        }
+
         .social-company { color: #555; }
+        
         .social-location { display: flex; align-items: center; gap: 6px; color: #888; }
         .social-location svg { width: 20px !important; height: 20px !important; } 
 
-        .social-footer { text-align: center; margin-top: 25px; font-size: 26px; font-weight: 700; color: #444; background: #fff; padding: 16px; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.03); }
+        .social-footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 26px;
+            font-weight: 700;
+            color: #444;
+            background: #fff;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.03);
+        }
         .social-footer span { color: var(--primary-color); }
-        
-        @media (max-width: 1100px) { .app-wrapper { flex-direction: column; align-items: center; } .preview-container { position: static; } }
-        @media (max-width: 600px) { .dashboard { min-width: 100%; width: 100%; padding: 20px; } .preview-container { width: 324px; height: 324px; } #social-wrapper { transform: scale(0.3); } }
     </style>
 </head>
 <body>
 
-    <div class="app-wrapper">
-        <div class="dashboard">
-            <div class="dash-header">
-                <img src="" id="main-dash-logo" alt="Gippslander Logo">
-                <span id="status-text">System Ready</span>
-            </div>
+    <div class="dashboard">
+        <div class="dash-header">
+            <img src="" id="main-dash-logo" alt="Gippslander Logo">
+            <span id="status-text">System Ready</span>
+        </div>
 
-            <div class="controls">
-                <input type="text" id="town-input" placeholder="Search by Region or Town (Leave blank for all jobs)">
-                <button onclick="fetchJobs()" id="fetch-btn">Search Jobs</button>
-            </div>
-            
-            <div class="controls">
-                <input type="text" id="tile-title-input" placeholder="Tile Header (e.g., The Daily Drop)" value="The Daily Drop" oninput="updateLivePreview()">
-            </div>
-
-            <div class="filter-bar" id="filters-container">
-                <select id="location-filter" onchange="applyFilters()">
-                    <option value="all">All Searched Locations</option>
-                </select>
-                <label>
-                    <input type="checkbox" id="featured-filter" onchange="applyFilters()"> Featured / Premium Only
-                </label>
-            </div>
-
-            <div class="job-list" id="job-list-container">
-                <div style="padding: 30px; text-align: center; color: #888; font-size: 1.1rem;">Loading jobs...</div>
-            </div>
-
-            <div class="action-row">
-                <button class="btn-generate" id="generate-btn" onclick="generateSocialTile()" disabled>Download Social Tile (0/4 Selected)</button>
-                <button class="btn-clear" id="clear-btn" onclick="clearSelection()">Clear Selection</button>
-            </div>
-
-            <div class="social-text-box" id="social-text-container">
-                <h4>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-                    Ready to Post: Copy & Paste Text
-                </h4>
-                
-                <p>1. Main Facebook Post:</p>
-                <textarea id="fb-caption" rows="5" readonly></textarea>
-                
-                <p>2. Put this in the First Comment:</p>
-                <textarea id="fb-comment" rows="6" readonly></textarea>
-            </div>
+        <div class="controls">
+            <input type="text" id="town-input" placeholder="Search by Region or Town (Leave blank for all jobs)">
+            <button onclick="fetchJobs()" id="fetch-btn">Search Jobs</button>
         </div>
         
-        <div class="preview-container">
-            <div id="social-wrapper">
-                <div id="social-template">
-                    <div class="watermark" id="social-watermark"></div>
-                    
-                    <div class="social-header">
-                        <img id="social-safe-logo" src="" alt="Gippslander Logo">
-                        <h1 id="social-title-text">The Daily Drop</h1>
-                        <p id="social-locations-text">South Gippsland</p>
-                    </div>
-                    
-                    <div class="social-grid" id="social-grid-container">
-                        <div style="text-align:center; padding-top: 150px; color: #aaa; font-size: 30px; font-weight: 600;">
-                            Select 4 jobs to generate preview
-                        </div>
-                    </div>
+        <div class="controls">
+            <input type="text" id="tile-title-input" placeholder="Tile Header (e.g., Jobs of the Week)" value="Jobs of the Week">
+        </div>
 
-                    <div class="social-footer">
-                        Apply now at <span>gippslander.com.au/jobs</span>
-                    </div>
+        <div class="filter-bar" id="filters-container">
+            <select id="location-filter" onchange="applyFilters()">
+                <option value="all">All Searched Locations</option>
+            </select>
+            <label>
+                <input type="checkbox" id="featured-filter" onchange="applyFilters()"> Featured / Premium Only
+            </label>
+        </div>
+
+        <div class="job-list" id="job-list-container">
+            <div style="padding: 30px; text-align: center; color: #888; font-size: 1.1rem;">Loading jobs...</div>
+        </div>
+
+        <div class="action-row">
+            <button class="btn-generate" id="generate-btn" onclick="generateSocialTile()" disabled>Download Social Tile (0/4 Selected)</button>
+            <button class="btn-clear" id="clear-btn" onclick="clearSelection()">Clear Selection</button>
+        </div>
+    </div>
+
+    <div id="social-wrapper">
+        <div id="social-template">
+            <div class="social-header">
+                <img id="social-safe-logo" src="" alt="Gippslander Logo">
+                <h1 id="social-title-text">Jobs of the Week</h1>
+                <p id="social-locations-text">South Gippsland</p>
+            </div>
+            
+            <div class="social-grid" id="social-grid-container">
                 </div>
+
+            <div class="social-footer">
+                Apply now at <span>gippslander.com.au/jobs</span>
             </div>
         </div>
     </div>
@@ -218,7 +278,6 @@
                 
                 document.getElementById('main-dash-logo').src = cachedLogoBase64;
                 document.getElementById('social-safe-logo').src = cachedLogoBase64;
-                document.getElementById('social-watermark').style.backgroundImage = `url(${cachedLogoBase64})`;
             };
             img.src = LOGO_URL;
 
@@ -229,7 +288,6 @@
             selectedJobsMap.clear();
             applyFilters();
             updateButtonState();
-            updateLivePreview(); 
         }
 
         async function fetchJobs() {
@@ -300,31 +358,25 @@
             const daysOld = Math.floor((new Date() - postedDate) / (1000 * 60 * 60 * 24));
             const appCount = job.applications_count || job.applications || job.applied || 0;
             
-            const totalDuration = job.job_expires_in_days || 30; 
-            const daysLeft = totalDuration - daysOld;
-            
-            if (daysLeft <= 5 && daysLeft >= 0) return { type: 'closing', text: 'Closing Soon', svg: CLOCK_SVG };
             if (daysOld < 3) return { type: 'new', text: 'Just Listed', svg: ZAP_SVG };
+            if (daysOld > 20) return { type: 'closing', text: 'Closing Soon', svg: CLOCK_SVG };
             if (appCount >= 5) return { type: 'pop', text: 'Popular', svg: TREND_SVG };
             
             return null; 
         }
 
-        function toSmartTitleCase(str) {
-            const smallWords = /^(a|an|and|as|at|but|by|en|for|if|in|nor|of|on|or|per|the|to|v.?|vs.?|via)$/i;
-            return str.replace(/\w\S*/g, function(txt, offset) {
-                if (offset !== 0 && smallWords.test(txt)) {
-                    return txt.toLowerCase();
-                }
-                return txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase();
-            });
+        // Title Case Helper Function
+        function toTitleCase(str) {
+            return str.toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
         }
 
         function buildJobRow(job, isSelected, maxReached) {
             const employer = job.employer?.name || 'Local Employer';
             const location = (job.location || '').replace(/,\s*Victoria,\s*Australia/i, '');
             const isFeatured = job.featured || job.pin_to_top;
-            const smartTitle = toSmartTitleCase(job.title);
+            
+            // Generate Title Case for dashboard list
+            const titleCaseTitle = toTitleCase(job.title);
             const jobKey = job.id; 
             
             let badgesHTML = '';
@@ -345,7 +397,7 @@
                 <input type="checkbox" id="job-check-${jobKey}" ${isSelected ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
                 <div class="job-info">
                     <label for="job-check-${jobKey}" style="cursor: ${isDisabled ? 'not-allowed' : 'pointer'}; display: block; width: 100%;">
-                        <h3>${smartTitle} ${badgesHTML}</h3>
+                        <h3>${titleCaseTitle} ${badgesHTML}</h3>
                         <p>${employer} &nbsp;|&nbsp; <span style="color:#d32f2f; display:flex; align-items:center;">${PIN_SVG}</span> &nbsp;${location}</p>
                     </label>
                 </div>
@@ -388,7 +440,6 @@
             }
 
             updateButtonState();
-            updateLivePreview(); 
         }
 
         function updateButtonState() {
@@ -409,90 +460,6 @@
             clearBtn.style.display = count > 0 ? 'block' : 'none';
         }
 
-        function getFormattedDate() {
-            const options = { weekday: 'long', day: 'numeric', month: 'long' };
-            return new Date().toLocaleDateString('en-AU', options).toUpperCase();
-        }
-
-        // --- THE LIVE PREVIEW & COPY TEXT SYSTEM ---
-        function updateLivePreview() {
-            const selectedJobs = Array.from(selectedJobsMap.values());
-            const grid = document.getElementById('social-grid-container');
-            const textContainer = document.getElementById('social-text-container');
-            
-            const customTitle = document.getElementById('tile-title-input').value.trim() || 'The Daily Drop';
-            document.getElementById('social-title-text').innerText = customTitle;
-            
-            const uniqueTowns = [...new Set(selectedJobs.map(job => (job.location || '').replace(/,\s*Victoria,\s*Australia/i, '').trim()))].filter(Boolean);
-            
-            const todayDateStr = getFormattedDate();
-            let subtextLine = 'Select jobs to build tile';
-            if (selectedJobs.length > 0) {
-                subtextLine = uniqueTowns.length > 0 ? `${todayDateStr} • ${uniqueTowns.join(' • ')}` : todayDateStr;
-            }
-            document.getElementById('social-locations-text').innerText = subtextLine;
-
-            // Empty state handler
-            if (selectedJobs.length < 4) {
-                textContainer.style.display = 'none'; // Hide text generator until full
-            }
-            if (selectedJobs.length === 0) {
-                grid.innerHTML = `<div style="text-align:center; padding-top: 150px; color: #aaa; font-size: 30px; font-weight: 600;">Select 4 jobs to generate preview</div>`;
-                return;
-            }
-
-            // Build Tile Image HTML
-            grid.innerHTML = selectedJobs.map((job) => {
-                const category = job.category?.name || 'General';
-                const employer = job.employer?.name || 'Local Employer';
-                const location = (job.location || '').replace(/,\s*Victoria,\s*Australia/i, '');
-                const isFeat = job.featured || job.pin_to_top;
-                const smartTitle = toSmartTitleCase(job.title);
-
-                let socialBadgesHTML = '';
-                if (isFeat) socialBadgesHTML += `<span class="soc-badge" style="background: var(--badge-feat-bg); color: var(--badge-feat-txt);">${STAR_SVG} Featured</span>`;
-
-                const dynBadge = getJobBadgeData(job);
-                if (dynBadge) socialBadgesHTML += `<span class="soc-badge" style="background: var(--badge-${dynBadge.type}-bg); color: var(--badge-${dynBadge.type}-txt);">${dynBadge.svg} ${dynBadge.text}</span>`;
-                
-                const leftBorderColor = isFeat ? 'var(--primary-color)' : '#cbd5e1';
-
-                return `
-                    <div class="social-card" style="border-left-color: ${leftBorderColor};">
-                        <div class="social-category-row">
-                            <span class="social-category">${category}</span>
-                            <div class="social-badges">${socialBadgesHTML}</div>
-                        </div>
-                        <h2 class="social-title">${smartTitle}</h2>
-                        <div class="social-bottom-row">
-                            <span class="social-company">${employer}</span>
-                            <span style="color: #ccc;">•</span>
-                            <span class="social-location"><span style="color:#e53935; display:flex;">${PIN_SVG}</span> ${location}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            
-            // Build Copy & Paste Text if 4 jobs selected
-            if (selectedJobs.length === 4) {
-                textContainer.style.display = 'block';
-                
-                // Set the Main Post Caption
-                const captionText = `🚨 **${customTitle} has landed!** 🚨\n\nWe’ve rounded up 4 fresh opportunities across Gippsland today. Whether you’re looking to step up, scale back, or completely change lanes, your next career move could be right here.\n\n👇 See something you like? Tag a mate who needs to see this, and check the comments for direct links to apply!\n\n🔗 gippslander.com.au/jobs`;
-                document.getElementById('fb-caption').value = captionText;
-                
-                // Set the Comments List
-                let commentText = `Here are the direct links to apply for today's roles:\n\n`;
-                selectedJobs.forEach(job => {
-                    const smartTitle = toSmartTitleCase(job.title);
-                    const employer = job.employer?.name || 'Local Employer';
-                    commentText += `🔗 ${smartTitle} at ${employer}:\ngippslander.au/${job.id}\n\n`;
-                });
-                document.getElementById('fb-comment').value = commentText.trim();
-            }
-        }
-
-        // --- FINAL EXPORT ---
         function generateSocialTile() {
             if (selectedJobsMap.size !== 4) return;
 
@@ -501,21 +468,71 @@
             btn.innerText = "Generating Image... Please wait";
             btn.disabled = true;
 
-            const element = document.getElementById('social-template');
+            const selectedJobs = Array.from(selectedJobsMap.values());
+            const grid = document.getElementById('social-grid-container');
             
-            html2canvas(element, { 
-                scale: 2, 
-                useCORS: true, 
-                backgroundColor: null 
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `Gippslander-Social-${new Date().toISOString().slice(0,10)}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
+            const customTitle = document.getElementById('tile-title-input').value.trim() || 'Jobs of the Week';
+            document.getElementById('social-title-text').innerText = customTitle;
+            
+            const uniqueTowns = [...new Set(selectedJobs.map(job => (job.location || '').replace(/,\s*Victoria,\s*Australia/i, '').trim()))].filter(Boolean);
+            document.getElementById('social-locations-text').innerText = uniqueTowns.join(' • ');
+
+            if(cachedLogoBase64) document.getElementById('social-safe-logo').src = cachedLogoBase64;
+
+            grid.innerHTML = selectedJobs.map((job) => {
+                const category = job.category?.name || 'General';
+                const employer = job.employer?.name || 'Local Employer';
+                const location = (job.location || '').replace(/,\s*Victoria,\s*Australia/i, '');
+                const isFeat = job.featured || job.pin_to_top;
                 
-                btn.innerText = currentText;
-                btn.disabled = false;
-            });
+                // Generate Title Case for the final image
+                const titleCaseTitle = toTitleCase(job.title);
+
+                let socialBadgesHTML = '';
+                if (isFeat) {
+                    socialBadgesHTML += `<span class="soc-badge" style="background: var(--badge-feat-bg); color: var(--badge-feat-txt);">${STAR_SVG} Featured</span>`;
+                }
+
+                const dynBadge = getJobBadgeData(job);
+                if (dynBadge) {
+                    socialBadgesHTML += `<span class="soc-badge" style="background: var(--badge-${dynBadge.type}-bg); color: var(--badge-${dynBadge.type}-txt);">${dynBadge.svg} ${dynBadge.text}</span>`;
+                }
+                
+                const leftBorderColor = isFeat ? '#f57c00' : 'var(--primary-color)';
+
+                return `
+                    <div class="social-card" style="border-left-color: ${leftBorderColor};">
+                        <div class="social-category-row">
+                            <span class="social-category">${category}</span>
+                            <div class="social-badges">${socialBadgesHTML}</div>
+                        </div>
+                        <h2 class="social-title">${titleCaseTitle}</h2>
+                        <div class="social-bottom-row">
+                            <span class="social-company">${employer}</span>
+                            <span style="color: #ccc;">•</span>
+                            <span class="social-location"><span style="color:#e53935; display:flex;">${PIN_SVG}</span> ${location}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            setTimeout(() => {
+                const element = document.getElementById('social-template');
+                
+                html2canvas(element, { 
+                    scale: 2, 
+                    useCORS: true, 
+                    backgroundColor: null 
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `Gippslander-Social-${new Date().toISOString().slice(0,10)}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    
+                    btn.innerText = currentText;
+                    btn.disabled = false;
+                });
+            }, 300);
         }
     </script>
 </body>
