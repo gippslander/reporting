@@ -14,7 +14,8 @@
 
     <style>
         :root {
-            --primary-color: #4CAF50;
+            /* OPTIMIZED: Darkened for sharp B+W contrast */
+            --primary-color: #2E7D32; 
             --text-main: #1a1a1a;
             --bg-color: #f4f7f6;
             --font-main: 'Poppins', sans-serif;
@@ -34,7 +35,7 @@
         input[type="text"]:focus { border-color: var(--primary-color); }
         
         button { background: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 1rem; }
-        button:hover { background: #388E3C; }
+        button:hover { background: #1B5E20; }
         button:disabled { background: #ccc; cursor: not-allowed; }
 
         /* --- LIST HEADER --- */
@@ -87,7 +88,8 @@
         .pdf-card-main { display: table-cell; width: 65%; vertical-align: middle; padding-right: 25px; word-wrap: break-word; }
         .pdf-qr-section { display: table-cell; width: 35%; vertical-align: middle; border-left: 2px dashed #eee; padding-left: 15px; text-align: center; }
 
-        .pdf-category { display: block; font-size: 12px; color: var(--primary-color); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;}
+        /* Allowed for Sentence Case styling */
+        .pdf-category { display: block; font-size: 12px; color: var(--primary-color); font-weight: 700; letter-spacing: 1px; margin-bottom: 4px;}
         
         .pdf-title { 
             font-size: 18px; font-weight: 800; margin: 0 0 4px 0; line-height: 1.2; 
@@ -97,11 +99,11 @@
         .pdf-company { font-size: 14px; font-weight: 600; color: #444; margin: 0 0 4px 0; }
         .pdf-location { font-size: 13px; color: #666; margin: 0 0 6px 0; display: block; }
         
-        /* Badges */
+        /* High-contrast badges for B+W printing */
         .pdf-badges { margin-bottom: 8px; }
         .badge-pill { display: inline-block; font-size: 9.5px; font-weight: 700; padding: 3px 6px; border-radius: 4px; margin-right: 6px; vertical-align: middle;}
-        .badge-fresh { background: #e8f5e9; color: #2e7d32; }
-        .badge-urgent { background: #ffebee; color: #c62828; }
+        .badge-fresh { background: #e8f5e9; color: #000; border: 1px solid #81c784; }
+        .badge-urgent { background: #ffebee; color: #000; border: 1px solid #e57373; }
 
         .pdf-desc { 
             font-size: 12px; color: #555; line-height: 1.4; margin-bottom: 0; 
@@ -127,12 +129,12 @@
         </div>
         
         <div class="controls">
-            <input type="text" id="flyer-title-input" placeholder="Edition Name (e.g., South Gippsland Jobs)" value="Local Job Opportunities">
+            <input type="text" id="flyer-title-input" placeholder="Edition Name (e.g., South Gippsland Jobs)" value="Local job opportunities">
         </div>
 
         <div class="list-header" id="list-header-controls" style="display: none;">
-            <h3>Select Towns to Include:</h3>
-            <button class="btn-select-all" id="btn-select-all" onclick="toggleSelectAll()">Select All Towns</button>
+            <h3>Select towns to include:</h3>
+            <button class="btn-select-all" id="btn-select-all" onclick="toggleSelectAll()">Select all towns</button>
         </div>
 
         <div class="job-list" id="job-list-container">
@@ -140,16 +142,16 @@
         </div>
 
         <div class="admin-options">
-            <label><input type="checkbox" id="featured-filter" onchange="updateButtonState()"> Featured / Premium Jobs Only</label>
+            <label><input type="checkbox" id="featured-filter" onchange="updateButtonState()"> Featured / premium jobs only</label>
             <span style="color: #bbdefb;">|</span>
-            <label><input type="checkbox" id="include-insights" checked> + Insights Card</label>
-            <label><input type="checkbox" id="include-courses" checked> + Courses Card</label>
-            <label><input type="checkbox" id="include-alerts" checked> + Alerts Card</label>
+            <label><input type="checkbox" id="include-insights" checked> + Insights card</label>
+            <label><input type="checkbox" id="include-courses" checked> + Courses card</label>
+            <label><input type="checkbox" id="include-alerts" checked> + Alerts card</label>
         </div>
 
         <div class="action-row">
             <button class="btn-generate" id="generate-btn" onclick="generatePDF()" disabled>Download PDF Flyer (0 jobs)</button>
-            <button class="btn-clear" id="clear-btn" onclick="clearSelection()">Clear Selection</button>
+            <button class="btn-clear" id="clear-btn" onclick="clearSelection()">Clear selection</button>
         </div>
     </div>
 
@@ -157,7 +159,7 @@
         <div id="pdf-template">
             <div class="pdf-header">
                 <img id="pdf-safe-logo" src="" alt="Gippslander Logo">
-                <h1 id="pdf-title-town">Local Job Opportunities</h1>
+                <h1 id="pdf-title-town">Local job opportunities</h1>
                 <div class="pdf-edition-bar" id="pdf-date-line"></div>
                 <span id="pdf-featured-locations"></span>
             </div>
@@ -167,10 +169,10 @@
     </div>
 
     <script>
-        const BASE_API_URL = 'https://gippsland-jobs-proxy.vercel.app/api/jobs'; // Removed towns= query to fetch all
+        const BASE_API_URL = 'https://gippsland-jobs-proxy.vercel.app/api/jobs'; 
         const LOGO_URL = 'https://raw.githubusercontent.com/gippslander/assets/main/gippslander_com_au_logo.png';
         
-        // --- SVG Icons (Star Removed) ---
+        // --- SVG Icons ---
         const PIN_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d32f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-bottom: 2px; margin-right: 4px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`;
         const BOOK_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0d47a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-bottom: 2px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>`;
         const LAPTOP_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-bottom: 2px; margin-right: 4px;"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>`;
@@ -199,11 +201,16 @@
             };
             img.src = LOGO_URL;
 
-            // Instantly fetch jobs on load
             fetchJobs();
         };
 
-        // --- UTM Tracker ---
+        // Helper function to force Sentence case format
+        function toSentenceCase(str) {
+            if (!str) return '';
+            const lower = str.toLowerCase();
+            return lower.charAt(0).toUpperCase() + lower.slice(1);
+        }
+
         function buildTrackingUrl(baseLink, campaign) {
             try {
                 const url = new URL(baseLink);
@@ -358,7 +365,7 @@
         function updateSelectAllButtonText() {
             const btn = document.getElementById('btn-select-all');
             const allSelected = selectedTowns.size === uniqueTowns.length && uniqueTowns.length > 0;
-            btn.innerText = allSelected ? "Deselect All Towns" : "Select All Towns";
+            btn.innerText = allSelected ? "Deselect all towns" : "Select all towns";
         }
 
         function generatePDF() {
@@ -377,7 +384,7 @@
             const includeCourses = document.getElementById('include-courses').checked;
             const includeAlerts = document.getElementById('include-alerts').checked;
 
-            const customTitle = document.getElementById('flyer-title-input').value.trim() || 'Local Job Opportunities';
+            const customTitle = document.getElementById('flyer-title-input').value.trim() || 'Local job opportunities';
             document.getElementById('pdf-title-town').innerText = customTitle;
 
             const dateStr = new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -394,9 +401,12 @@
 
             // 1. Build Base Job Cards
             selectedJobs.forEach((job) => {
-                const category = job.category?.name || 'General';
+                const rawCategory = job.category?.name || 'General';
+                const category = toSentenceCase(rawCategory);
+                
                 const employer = job.employer?.name || 'Local Employer';
                 const location = getTownString(job);
+                const fullUrl = buildTrackingUrl(job.job_details_url || `https://gippslander.com.au/jobs/${job.id}`, customTitle);
                 
                 let cleanDesc = (job.description || '').replace(/<[^>]*>/g, ' ').replace(/\s\s+/g, ' ').trim();
                 const shortDesc = cleanDesc.length > 130 ? cleanDesc.substring(0, 130) + '...' : cleanDesc;
@@ -406,14 +416,14 @@
                 const postedDate = new Date(job.posted_at || job.created_at);
                 const diffDays = Math.ceil(Math.abs(now - postedDate) / (1000 * 60 * 60 * 24));
                 if (diffDays <= 7) {
-                    badgesHtml += `<span class="badge-pill badge-fresh">${CLOCK_SVG} Recently Listed</span>`;
+                    badgesHtml += `<span class="badge-pill badge-fresh">${CLOCK_SVG} Recently listed</span>`;
                 }
 
                 const expiresDays = job.job_expires_in_days || 30;
                 const expiryDate = new Date(postedDate.getTime() + (expiresDays * 24 * 60 * 60 * 1000));
                 const daysToExpiry = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
                 if (daysToExpiry > 0 && daysToExpiry <= 7) {
-                    badgesHtml += `<span class="badge-pill badge-urgent">${ALERT_SVG} Closing Soon</span>`;
+                    badgesHtml += `<span class="badge-pill badge-urgent">${ALERT_SVG} Closing soon</span>`;
                 }
                 
                 allCards.push(`
@@ -430,9 +440,11 @@
                                 <p class="pdf-desc">${shortDesc}</p>
                             </div>
                             <div class="pdf-qr-section">
-                                <div id="pdf-qr-job-${job.id}"></div>
-                                <span class="pdf-qr-text">Scan to Apply →</span>
-                                <span class="pdf-qr-sub">gippslander.au/${job.id}</span>
+                                <a href="${fullUrl}" target="_blank" style="text-decoration: none; color: inherit; display: block;">
+                                    <div id="pdf-qr-job-${job.id}"></div>
+                                    <span class="pdf-qr-text">Scan or click →</span>
+                                    <span class="pdf-qr-sub">gippslander.au/${job.id}</span>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -459,7 +471,7 @@
                 let barsHtml = '';
                 topDemand.forEach(item => {
                     const percentage = Math.max(15, (item.views / maxViews) * 100); 
-                    let label = percentage > 75 ? 'Very High Demand' : (percentage > 40 ? 'High Demand' : 'Moderate Demand');
+                    let label = percentage > 75 ? 'Very high demand' : (percentage > 40 ? 'High demand' : 'Moderate demand');
                     
                     barsHtml += `
                         <div style="margin-bottom: 8px;">
@@ -467,31 +479,35 @@
                                 <span>${item.loc}</span>
                                 <span style="color: #888; font-size: 10px;">${label}</span>
                             </div>
-                            <div style="background: #e0e0e0; height: 6px; border-radius: 3px; width: 100%; overflow: hidden;">
-                                <div style="background: var(--primary-color); height: 100%; width: ${percentage}%; border-radius: 3px;"></div>
+                            <div style="background: #e0e0e0; height: 8px; border-radius: 4px; width: 100%; border: 1px solid #bdbdbd; box-sizing: border-box; overflow: hidden;">
+                                <div style="background: var(--primary-color); height: 100%; width: ${percentage}%; border-right: 2px solid #111; box-sizing: border-box;"></div>
                             </div>
                         </div>
                     `;
                 });
+
+                const insightsUrl = buildTrackingUrl('https://gippslander.com.au/insights', customTitle);
 
                 specialCardsToInject.push(`
                     <div class="pdf-card">
                         <div class="pdf-card-inner">
                             <div class="pdf-card-main">
                                 <span class="pdf-category" style="color: #444;">
-                                    LOCAL MARKET INSIGHTS
+                                    Local market insights
                                     <span style="float: right;">${CHART_SVG}</span>
                                 </span>
-                                <h2 class="pdf-title">Employer Demand by Town</h2>
+                                <h2 class="pdf-title">Employer demand by town</h2>
                                 <p class="pdf-desc" style="margin-bottom: 12px; font-style: italic;">Based on recent activity, these locations currently have the highest job seeker demand.</p>
                                 ${barsHtml}
                             </div>
                             <div class="pdf-qr-section">
-                                <div style="margin: 0 auto 12px auto; width: 60px; height: 60px; background: #f0f0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                                </div>
-                                <span style="font-size: 12px; font-weight: 700; color: #444; text-align: center; display: block; margin-bottom: 6px;">Data Refreshed</span>
-                                <span style="display: block; font-size: 11px; color: #1a1a1a; font-weight: 800; text-align: center; background: #e0e0e0; padding: 6px 8px; border-radius: 6px; white-space: nowrap; width: 100%; box-sizing: border-box;">${dateStr}</span>
+                                <a href="${insightsUrl}" target="_blank" style="text-decoration: none; color: inherit; display: block;">
+                                    <div style="margin: 0 auto 12px auto; width: 60px; height: 60px; background: #f0f0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid #ddd;">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                                    </div>
+                                    <span style="font-size: 12px; font-weight: 700; color: #444; text-align: center; display: block; margin-bottom: 6px;">Data refreshed</span>
+                                    <span style="display: block; font-size: 11px; color: #1a1a1a; font-weight: 800; text-align: center; background: #e0e0e0; padding: 6px 8px; border-radius: 6px; white-space: nowrap; width: 100%; box-sizing: border-box;">${dateStr}</span>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -499,23 +515,27 @@
             }
 
             if (includeCourses) {
+                const coursesUrl = buildTrackingUrl('https://gippslander.com.au/courses', customTitle);
+                
                 specialCardsToInject.push(`
                     <div class="pdf-card" style="border-color: #0d47a1; background: #f4f8ff;">
                         <div class="pdf-card-inner">
                             <div class="pdf-card-main">
                                 <span class="pdf-category" style="color: #0d47a1;">
-                                    Level Up Your Skills
+                                    Level up your skills
                                     <span style="float: right;">${BOOK_SVG}</span>
                                 </span>
-                                <h2 class="pdf-title">Accredited Online Courses</h2>
+                                <h2 class="pdf-title">Accredited online courses</h2>
                                 <p class="pdf-company">Gippslander</p>
                                 <span class="pdf-location">${LAPTOP_SVG} 100% Online</span>
                                 <p class="pdf-desc">Give your resume the edge! Courses include Victorian RSA, Barista Essentials, Food Safety, Customer Service Training and more. Fully accredited.</p>
                             </div>
                             <div class="pdf-qr-section" style="border-left-color: #bbdefb;">
-                                <div id="pdf-qr-courses"></div>
-                                <span class="pdf-qr-text" style="color: #0d47a1;">Scan to Enroll →</span>
-                                <span class="pdf-qr-sub">gippslander.au/courses</span>
+                                <a href="${coursesUrl}" target="_blank" style="text-decoration: none; color: inherit; display: block;">
+                                    <div id="pdf-qr-courses"></div>
+                                    <span class="pdf-qr-text" style="color: #0d47a1;">Scan or click →</span>
+                                    <span class="pdf-qr-sub">gippslander.au/courses</span>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -523,23 +543,27 @@
             }
 
             if (includeAlerts) {
+                const alertsUrl = buildTrackingUrl('https://gippslander.com.au/alerts', customTitle);
+                
                 specialCardsToInject.push(`
-                    <div class="pdf-card" style="border-color: #f57f17; background: #fffde7;">
+                    <div class="pdf-card" style="border-color: #e65100; background: #fffde7;">
                         <div class="pdf-card-inner">
                             <div class="pdf-card-main">
                                 <span class="pdf-category" style="color: #e65100;">
-                                    Never Miss A Job
+                                    Never miss a job
                                     <span style="float: right;">${BELL_SVG}</span>
                                 </span>
-                                <h2 class="pdf-title">Get Local Job Alerts</h2>
+                                <h2 class="pdf-title">Get local job alerts</h2>
                                 <p class="pdf-company">Gippslander</p>
                                 <span class="pdf-location">${PIN_SVG} Sent straight to your inbox</span>
                                 <p class="pdf-desc">Want more local jobs? Scan the code or visit the link to get customized email alerts for your specific town and industry as soon as jobs are posted.</p>
                             </div>
                             <div class="pdf-qr-section" style="border-left-color: #ffe082;">
-                                <div id="pdf-qr-alerts"></div>
-                                <span class="pdf-qr-text" style="color: #e65100;">Scan to Subscribe →</span>
-                                <span class="pdf-qr-sub">gippslander.au/alerts</span>
+                                <a href="${alertsUrl}" target="_blank" style="text-decoration: none; color: inherit; display: block;">
+                                    <div id="pdf-qr-alerts"></div>
+                                    <span class="pdf-qr-text" style="color: #e65100;">Scan or click →</span>
+                                    <span class="pdf-qr-sub">gippslander.au/alerts</span>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -558,23 +582,27 @@
             });
 
             // 3. The Catch-All Card
+            const finalUrl = buildTrackingUrl('https://gippslander.com.au', customTitle);
+            
             const finalCard = `
-                <div class="pdf-card" style="border-color: #4CAF50; background: #f0fdf4;">
+                <div class="pdf-card" style="border-color: var(--primary-color); background: #f0fdf4;">
                     <div class="pdf-card-inner">
                         <div class="pdf-card-main">
-                            <span class="pdf-category" style="color: #4CAF50;">
-                                More Opportunities
+                            <span class="pdf-category" style="color: var(--primary-color);">
+                                More opportunities
                                 <span style="float: right;">🔍</span>
                             </span>
-                            <h2 class="pdf-title">Find These Jobs & Many More</h2>
+                            <h2 class="pdf-title">Find these jobs & many more</h2>
                             <p class="pdf-company">Gippslander</p>
                             <span class="pdf-location">${PIN_SVG} Gippsland Wide</span>
-                            <p class="pdf-desc">Didn't find the perfect fit? We have hundreds of local roles added weekly. Scan the code or visit the link to explore all available jobs across the region.</p>
+                            <p class="pdf-desc">Know someone looking for work? Snap a photo of this flyer and send it to them, or scan below to explore hundreds of roles added weekly.</p>
                         </div>
-                        <div class="pdf-qr-section" style="border-left-color: #c6f6d5;">
-                            <div id="pdf-qr-final"></div>
-                            <span class="pdf-qr-text" style="color: #4CAF50;">Scan to Explore →</span>
-                            <span class="pdf-qr-sub">gippslander.com.au</span>
+                        <div class="pdf-qr-section" style="border-left-color: #a5d6a7;">
+                            <a href="${finalUrl}" target="_blank" style="text-decoration: none; color: inherit; display: block;">
+                                <div id="pdf-qr-final"></div>
+                                <span class="pdf-qr-text" style="color: var(--primary-color);">Scan or click →</span>
+                                <span class="pdf-qr-sub">gippslander.com.au</span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -610,13 +638,15 @@
 
                 const element = document.getElementById('pdf-template');
                 
+                // OPTIMIZED: Added 'enableLinks: true' to HTML2PDF configuration
                 const opt = {
                     margin:       [25, 0, 15, 0], 
                     filename:     `Gippslander-Jobs-${new Date().toISOString().slice(0,10)}.pdf`,
                     image:        { type: 'jpeg', quality: 0.98 },
                     html2canvas:  { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 }, 
                     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                    pagebreak:    { mode: ['css', 'legacy'], avoid: ['.pdf-card', '.pdf-header'] } 
+                    pagebreak:    { mode: ['css', 'legacy'], avoid: ['.pdf-card', '.pdf-header'] },
+                    enableLinks:  true 
                 };
 
                 html2pdf().set(opt).from(element).toPdf().get('pdf').then(function (pdf) {
@@ -637,7 +667,9 @@
                         pdf.setFont("helvetica", "normal");
                         pdf.setFontSize(9);
                         pdf.setTextColor(150); 
-                        pdf.text('gippslander.com.au', 10, pageHeight - 6);
+                        
+                        // Add instructions nudge at the bottom
+                        pdf.text("Open your phone's camera and point it at any code to view the job.", 10, pageHeight - 6);
 
                         const pageString = `Page ${i} of ${totalPages}`;
                         pdf.text(pageString, pageWidth - 25, pageHeight - 6);
