@@ -114,7 +114,6 @@
             position: relative;
         }
         
-        /* Z-Index mapping so text sits above the watermark */
         #social-template * { position: relative; z-index: 2; }
         
         .watermark {
@@ -150,7 +149,7 @@
             border-radius: 16px;
             padding: 18px 30px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.04);
-            border-left: 10px solid #cbd5e1; /* Default to modern grey */
+            border-left: 10px solid #cbd5e1; 
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -188,7 +187,6 @@
         }
         .social-footer span { color: var(--primary-color); }
         
-        /* Responsive Fixes for Live Preview on smaller screens */
         @media (max-width: 1100px) {
             .app-wrapper { flex-direction: column; align-items: center; }
             .preview-container { position: static; }
@@ -196,7 +194,7 @@
         @media (max-width: 600px) {
             .dashboard { min-width: 100%; width: 100%; padding: 20px; }
             .preview-container { width: 324px; height: 324px; }
-            #social-wrapper { transform: scale(0.3); } /* Shrinks preview further on mobile */
+            #social-wrapper { transform: scale(0.3); } 
         }
     </style>
 </head>
@@ -215,7 +213,7 @@
             </div>
             
             <div class="controls">
-                <input type="text" id="tile-title-input" placeholder="Tile Header (e.g., Jobs of the Week)" value="Jobs of the Week" oninput="updateLivePreview()">
+                <input type="text" id="tile-title-input" placeholder="Tile Header (e.g., The Daily Drop)" value="The Daily Drop" oninput="updateLivePreview()">
             </div>
 
             <div class="filter-bar" id="filters-container">
@@ -244,7 +242,7 @@
                     
                     <div class="social-header">
                         <img id="social-safe-logo" src="" alt="Gippslander Logo">
-                        <h1 id="social-title-text">Jobs of the Week</h1>
+                        <h1 id="social-title-text">The Daily Drop</h1>
                         <p id="social-locations-text">South Gippsland</p>
                     </div>
                     
@@ -290,7 +288,6 @@
                 
                 document.getElementById('main-dash-logo').src = cachedLogoBase64;
                 document.getElementById('social-safe-logo').src = cachedLogoBase64;
-                // Add base64 logo to the watermark background
                 document.getElementById('social-watermark').style.backgroundImage = `url(${cachedLogoBase64})`;
             };
             img.src = LOGO_URL;
@@ -302,7 +299,7 @@
             selectedJobsMap.clear();
             applyFilters();
             updateButtonState();
-            updateLivePreview(); // Clears the right-hand panel instantly
+            updateLivePreview(); 
         }
 
         async function fetchJobs() {
@@ -368,17 +365,14 @@
             renderChecklist(currentFilteredJobs);
         }
 
-        // --- SMARTER BADGE LOGIC ---
         function getJobBadgeData(job) {
             const postedDate = new Date(job.posted_at || job.created_at);
             const daysOld = Math.floor((new Date() - postedDate) / (1000 * 60 * 60 * 24));
             const appCount = job.applications_count || job.applications || job.applied || 0;
             
-            // Calculates remaining days based on exact API data instead of guessing
-            const totalDuration = job.job_expires_in_days || 30; // Failsafe to 30 if missing
+            const totalDuration = job.job_expires_in_days || 30; 
             const daysLeft = totalDuration - daysOld;
             
-            // Expiry is highest priority, then Just Listed, then Popular
             if (daysLeft <= 5 && daysLeft >= 0) return { type: 'closing', text: 'Closing Soon', svg: CLOCK_SVG };
             if (daysOld < 3) return { type: 'new', text: 'Just Listed', svg: ZAP_SVG };
             if (appCount >= 5) return { type: 'pop', text: 'Popular', svg: TREND_SVG };
@@ -386,8 +380,6 @@
             return null; 
         }
 
-        // --- "SMART" TITLE CASE ---
-        // Capitalizes words but ignores prepositions and conjunctions
         function toSmartTitleCase(str) {
             const smallWords = /^(a|an|and|as|at|but|by|en|for|if|in|nor|of|on|or|per|the|to|v.?|vs.?|via)$/i;
             return str.replace(/\w\S*/g, function(txt, offset) {
@@ -466,7 +458,7 @@
             }
 
             updateButtonState();
-            updateLivePreview(); // Re-render the visual tile instantly
+            updateLivePreview(); 
         }
 
         function updateButtonState() {
@@ -487,16 +479,30 @@
             clearBtn.style.display = count > 0 ? 'block' : 'none';
         }
 
+        // --- HELPER: GET FORMATTED DATE ---
+        function getFormattedDate() {
+            const options = { weekday: 'long', day: 'numeric', month: 'long' };
+            // Returns something like "Tuesday, 3 March" formatted to local standard
+            return new Date().toLocaleDateString('en-AU', options).toUpperCase();
+        }
+
         // --- THE LIVE PREVIEW SYSTEM ---
         function updateLivePreview() {
             const selectedJobs = Array.from(selectedJobsMap.values());
             const grid = document.getElementById('social-grid-container');
             
-            const customTitle = document.getElementById('tile-title-input').value.trim() || 'Jobs of the Week';
+            const customTitle = document.getElementById('tile-title-input').value.trim() || 'The Daily Drop';
             document.getElementById('social-title-text').innerText = customTitle;
             
             const uniqueTowns = [...new Set(selectedJobs.map(job => (job.location || '').replace(/,\s*Victoria,\s*Australia/i, '').trim()))].filter(Boolean);
-            document.getElementById('social-locations-text').innerText = uniqueTowns.length > 0 ? uniqueTowns.join(' • ') : 'Select jobs to build tile';
+            
+            // Generate the dynamic Date + Locations string
+            const todayDateStr = getFormattedDate();
+            let subtextLine = 'Select jobs to build tile';
+            if (selectedJobs.length > 0) {
+                subtextLine = uniqueTowns.length > 0 ? `${todayDateStr} • ${uniqueTowns.join(' • ')}` : todayDateStr;
+            }
+            document.getElementById('social-locations-text').innerText = subtextLine;
 
             if (selectedJobs.length === 0) {
                 grid.innerHTML = `<div style="text-align:center; padding-top: 150px; color: #aaa; font-size: 30px; font-weight: 600;">Select 4 jobs to generate preview</div>`;
@@ -516,7 +522,6 @@
                 const dynBadge = getJobBadgeData(job);
                 if (dynBadge) socialBadgesHTML += `<span class="soc-badge" style="background: var(--badge-${dynBadge.type}-bg); color: var(--badge-${dynBadge.type}-txt);">${dynBadge.svg} ${dynBadge.text}</span>`;
                 
-                // Grey border for standard, Green for featured
                 const leftBorderColor = isFeat ? 'var(--primary-color)' : '#cbd5e1';
 
                 return `
